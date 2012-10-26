@@ -1,0 +1,16 @@
+# -*- encoding: utf-8-unix; -*-
+# File-name:    <.gitignore>
+# Author:       <小苏打>
+# Create:       <Thu Oct 25 15:51:58 2012>
+# Time-stamp:   <Friday October 26, 10:7:42 2012>
+
+Debug/
+Release/
+ipch/
+*.sdf
+*.opensdf
+*.suo
+*/Debug/
+*/bin/
+*/Release/
+*/obj/

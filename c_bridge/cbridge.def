@@ -1,0 +1,5 @@
+LIBRARY cbridge
+EXPORTS
+	DispatchCommand
+	InitializeComponent
+	ReleaseComponent

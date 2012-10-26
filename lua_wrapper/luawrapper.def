@@ -1,0 +1,3 @@
+LIBRARY luawrapper
+EXPORTS
+	RegisterFunctions

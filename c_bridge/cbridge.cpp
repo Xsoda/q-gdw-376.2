@@ -8,11 +8,11 @@
 
 static lua_State *lua;
 
-static int lua_Dispatch(unsigned int command, int arg)
+static int lua_Dispatch(char * command, int arg)
 {
     int ret;
     lua_getglobal(lua, "Dispatch");
-    lua_pushnumber(lua, command);
+    lua_pushstring(lua, command);
     lua_pushnumber(lua, arg);
     if (lua_pcall(lua, 2, 1, 0))
     {
@@ -27,9 +27,9 @@ static int lua_Dispatch(unsigned int command, int arg)
     }
 }
 
-int DispatchCommand(unsigned int command, int arg)
+int DispatchCommand(char * command, int arg)
 {
-    log_info("Dispatch command -> %d, arg -> %d", command, arg);
+    log_info("Dispatch command -> %s, arg -> %d", command, arg);
     if (lua_Dispatch(command, arg))
         log_error("DispatchCommand error");
     else
@@ -45,7 +45,7 @@ int InitializeComponent()
     // 初始化LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
-    RegisterFunctions(lua);
+   // RegisterFunctions(lua);
     if(luaL_dofile(lua, "Controller.lua"))
         log_error("load file <Controller.lua> fail");
     else

@@ -29,7 +29,7 @@ extern "C" {
 #pragma comment(lib, "../Release/lua.lib")
 #endif
 
-int RegisterFunctions(lua_State *lua);
+int luaopen_luawrapper(lua_State *lua);
 
 #if defined __cplusplus
 }

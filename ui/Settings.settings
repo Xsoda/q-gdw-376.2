@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ui" GeneratedClassName="Settings1">
+  <Profiles />
+  <Settings>
+    <Setting Name="open_serial" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">open serial</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

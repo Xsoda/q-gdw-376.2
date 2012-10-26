@@ -19,19 +19,19 @@ extern "C" {
 
 // include logger file
 #include "../logger/logger.h"
-#include "../lua_wrapper/luawrapper.h"
+//#include "../lua_wrapper/luawrapper.h"
 
 #if defined _DEBUG
 #pragma comment(lib, "../Debug/lua.lib")
 #pragma comment(lib, "../Debug/logger.lib")
-#pragma comment(lib, "../Debug/luawrapper.lib")
+//#pragma comment(lib, "../Debug/luawrapper.lib")
 #else
 #pragma comment(lib, "../Release/lua.lib")
 #pragma comment(lib, "../Release/logger.lib")
-#pragma comment(lib, "../Release/luawrapper.lib")
+//#pragma comment(lib, "../Release/luawrapper.lib")
 #endif
 
-int DispatchCommand(unsigned int command, int arg);
+int DispatchCommand(char * command, int arg);
 int InitializeComponent();
 int ReleaseComponent();
 

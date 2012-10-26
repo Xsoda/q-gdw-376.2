@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -17,7 +18,8 @@ namespace ui
 
         private void button1_Click( object sender, EventArgs e )
         {
-            UserNativeCode.DispatchCommand( 1, 0 );
+            IntPtr command =  Marshal.StringToHGlobalAnsi( Settings.Default.open_serial );           
+            UserNativeCode.DispatchCommand( command, 0 );
         }
 
         

@@ -14,7 +14,7 @@ namespace ui
         public extern static int ReleaseComponent();
 
         [DllImport( "cbridge.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
-        public extern static int DispatchCommand( uint command, int arg );
+        public extern static int DispatchCommand( IntPtr command, int arg );
     }
     class Win32NativeCode
     {

@@ -10,14 +10,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "logger\logger.vcxproj", "{B371FBB6-0907-4B31-B22C-57D9A14CEF09}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cbridge", "cbridge\cbridge.vcxproj", "{CB40A677-AAE3-4D39-A1CC-A55241A35221}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8AC842C2-0629-4CA8-88F0-F1E506E299FE} = {8AC842C2-0629-4CA8-88F0-F1E506E299FE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "lua\lua.vcxproj", "{8AC842C2-0629-4CA8-88F0-F1E506E299FE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serialport", "serialport\serialport.vcxproj", "{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainUI", "MainUI\MainUI.csproj", "{F51DAC10-6ADF-4F12-9D42-EC84FC296154}"
 	ProjectSection(ProjectDependencies) = postProject
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41} = {F8220272-E7AB-45AF-A86B-9D50D5E3BC41}
 		{CB40A677-AAE3-4D39-A1CC-A55241A35221} = {CB40A677-AAE3-4D39-A1CC-A55241A35221}
 	EndProjectSection
 EndProject
@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Controller.lua = Controller.lua
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serialport", "serialport\serialport.vcxproj", "{1CBA6813-D856-4004-915D-08D1956052B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,16 +78,6 @@ Global
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE}.Release|Win32.ActiveCfg = Release|Win32
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE}.Release|Win32.Build.0 = Release|Win32
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE}.Release|x86.ActiveCfg = Release|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Debug|Win32.Build.0 = Debug|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Debug|x86.ActiveCfg = Debug|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Release|Win32.ActiveCfg = Release|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Release|Win32.Build.0 = Release|Win32
-		{F8220272-E7AB-45AF-A86B-9D50D5E3BC41}.Release|x86.ActiveCfg = Release|Win32
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Debug|Win32.ActiveCfg = Debug|x86
@@ -96,6 +88,16 @@ Global
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Release|Win32.ActiveCfg = Release|x86
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Release|x86.ActiveCfg = Release|x86
 		{F51DAC10-6ADF-4F12-9D42-EC84FC296154}.Release|x86.Build.0 = Release|x86
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Debug|Win32.Build.0 = Debug|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Win32.ActiveCfg = Release|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Win32.Build.0 = Release|Win32
+		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

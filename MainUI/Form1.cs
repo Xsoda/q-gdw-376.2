@@ -30,9 +30,17 @@ namespace MainUI
 
         private void btn_openserial_Click( object sender, EventArgs e )
         {
+            IntPtr serialport = new IntPtr();
             IntPtr command = Marshal.StringToHGlobalAnsi( Properties.Settings.Default.OpenSerial );
-            UserNativeFunction.DispatchCommand( command, 0 );
+            if ( cb_serialport.SelectedItem != null )
+            {
+                serialport = Marshal.StringToHGlobalAnsi( cb_serialport.SelectedItem.ToString() );
+                UserNativeFunction.DispatchCommand( command, serialport, 0 );
+            }
+            else
+            {
+                MessageBox.Show( "请选择一个串口~~", "错误", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning );
+            }
         }
-
     }
 }

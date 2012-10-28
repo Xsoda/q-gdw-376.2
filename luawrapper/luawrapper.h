@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 int luaopen_luawrapper(lua_State *lua);
-
+// int RegisterFunctions(lua_State *lua);
 #if defined __cplusplus
 }
 #endif

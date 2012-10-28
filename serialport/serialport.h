@@ -32,7 +32,7 @@ typedef struct tagConfig {
     BYTE bDataBits;
     BYTE bStopBits;
     BOOL fDiscardNull;
-    FLOWCONTROL flowControl;
+    FlowControl flowControl;
 } Config, *LPConfig;
 
 typedef struct _tagSerialPort {
@@ -48,7 +48,9 @@ typedef struct _tagSerialPort {
     DWORD dwEventThread;
     LPTSTR *lpPortlist;
     DWORD dwPortCount;
-    FLOWCONTROL flowControl;
+    FlowControl flowControl;
 } SerialPort  , *LPSerialPort;
+LONG SerialPort_GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount);
+VOID SerialPort_FreePortNameList(LPTSTR * portList);
 
 #endif /* _SERIALPORT_H_ */

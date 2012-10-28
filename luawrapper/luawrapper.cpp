@@ -7,59 +7,35 @@
 #include "luawrapper.h"
 
 // register logger function
+#pragma region logger module wrapper
 static int lua_log_info(lua_State *lua)
 {
-    const char *content;
-    int args = 0;
-    args = luaL_checkinteger(lua, -1);
-    if (args > 0) {
-        lua_concat(lua, args);
-        content = luaL_checkstring(lua, -1);
-        log_info(content);
-    }    
+    const char *content = luaL_checkstring(lua, -1);
+    log_info(content);
     return 0;
 }
 
 static int lua_log_error(lua_State *lua)
 {
-    const char *content;
-    int args = 0;
-    args = luaL_checkinteger(lua, -1);
-    if (args > 0) {
-        lua_concat(lua, args);
-        content = luaL_checkstring(lua, -1);
-        log_error(content);
-    }
+    const char *content = luaL_checkstring(lua, -1);
+    log_error(content);
     return 0;
 }
 
 static int lua_log_debug(lua_State *lua)
 {
-    const char *content;
-    int args = 0;
-    args = luaL_checkinteger(lua, -1);
-    if (args > 0) {
-        lua_concat(lua, args);
-        content = luaL_checkstring(lua, -1);
-        log_debug(content);
-
-    }
+    const char *content = luaL_checkstring(lua, -1);
+    log_debug(content);
     return 0;
 }
 
 static int lua_log_warn(lua_State *lua)
 {
-    const char *content;
-    int args = 0;
-    args = luaL_checkinteger(lua, -1);
-    if (args > 0) {
-        lua_concat(lua, args);
-        content = luaL_checkstring(lua, -1);
-        log_warn(content);
-    }
+    const char *content = luaL_checkstring(lua, -1);
+    log_warn(content);
     return 0;
 }
-
+#pragma endregion logger module wrapper
 static const luaL_Reg logger[] = {
     // logger.dll
     {"log_info", lua_log_info},
@@ -79,6 +55,20 @@ int luaopen_luawrapper(lua_State *lua)
         lua_setglobal(lua, lib->name);
     }
     */
-    luaL_newlib(lua, logger);
+    //luaL_newlib(lua, logger);
+    luaL_newlibtable(lua, logger);
+    luaL_setfuncs(lua, logger, 0);
     return 1;
 }
+#if 0
+int RegisterFunctions(lua_State *lua)
+{    
+    const luaL_Reg *lib = logger;
+    for (; lib->func != NULL; lib++)
+    {
+        lua_pushcfunction(lua, lib->func);
+        lua_setglobal(lua, lib->name);
+    }    
+    return 1;
+}
+#endif

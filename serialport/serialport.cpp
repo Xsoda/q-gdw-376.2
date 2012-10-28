@@ -4,8 +4,12 @@
 // Create:       <Thu Oct 25 16:41:10 2012>
 // Time-stamp:   <Thursday October 25, 17:7:20 2012>
 
+#include <Windows.h>
+#include <tchar.h>
+
 #include "serialport.h"
 
+#define NELEMS(x) sizeof x / sizeof x[0] 
 #pragma region Port Names
 
 /****************************************************************************
@@ -25,7 +29,7 @@
  *
 \****************************************************************************/
 
-LONG GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount)
+LONG SerialPort_GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount)
 {
     HKEY hKey;
     LONG res;
@@ -70,7 +74,7 @@ LONG GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount)
             if(NULL == (*lpPortList)[port])
                 continue;
 
-            _tmemmove((*lpPortList)[port], portName, lenName);
+            memmove((*lpPortList)[port], portName, lenName);
         }
     }
     __finally
@@ -95,7 +99,7 @@ LONG GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount)
  *
 \****************************************************************************/
 
-VOID FreePortNameList(LPTSTR * portList)
+VOID SerialPort_FreePortNameList(LPTSTR * portList)
 {
     int Count = 0;
     while (portList[Count])

@@ -15,17 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="logger.cpp">
+    <ClCompile Include="luawrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="logger.def">
+    <None Include="luawrapper.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="logger.h">
+    <ClInclude Include="luawrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

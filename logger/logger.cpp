@@ -34,7 +34,7 @@ void log_add(Logger la, int level, const char *msg)
     char buf[64];
 
     strftime(buf, sizeof(buf), la->datetime_format, localtime(&meow));
-    fprintf(fp, "[%d] %c, %s : %s\n", (int)getpid(), LOG_LEVEL_CHARS[level], buf, msg);
+    fprintf(fp, "[%d] %c, %s : %s\n", (int)_getpid(), LOG_LEVEL_CHARS[level], buf, msg);
     fclose(fp);
 }
 

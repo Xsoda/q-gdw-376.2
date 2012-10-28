@@ -11,7 +11,7 @@
 #include <limits.h>
 #include <stddef.h>
 
-
+#define LUA_BUILD_AS_DLL
 /*
 ** ==================================================================
 ** Search for "@@" to find all configurable definitions.

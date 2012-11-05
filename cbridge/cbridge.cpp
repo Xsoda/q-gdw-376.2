@@ -44,18 +44,16 @@ int DispatchCommand(char * command, char *arg1, int arg2)
 int InitializeComponent()
 {
     // 初始化 Logger
-    Logger_create();
-    
+    Logger_create();    
     // 初始化LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
     // RegisterFunctions(lua);
     if(luaL_dofile(lua, "Controller.lua"))
-        log_error("load file <Controller.lua> fail");
+        log_error("load file <Controller.lua> fail :: %s", lua_tostring(lua, -1));
     else
     {
-        log_info("load file <Controller.lua> success");
-        lua_pcall(lua, 0, 0, 0);
+        log_info("load file <Controller.lua> success");       
     }
     return 0;
 }

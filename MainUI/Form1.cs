@@ -18,14 +18,17 @@ namespace MainUI
             IntPtr lpPortList = new IntPtr();
             uint count = new uint();
             UserNativeFunction.SerialPort_GetPortNames( ref lpPortList, ref count );
-            IntPtr com = lpPortList;
-            for ( uint i = 0; i < count; i++ )
+            if (count != 0)
             {
-                cb_serialport.Items.Add( Marshal.PtrToStringAuto( Marshal.ReadIntPtr( com ) ) );
-                com = (IntPtr)( com.ToInt64() + Marshal.SizeOf( com ));
+                IntPtr com = lpPortList;
+                for (uint i = 0; i < count; i++)
+                {
+                    cb_serialport.Items.Add(Marshal.PtrToStringAuto(Marshal.ReadIntPtr(com)));
+                    com = (IntPtr)(com.ToInt64() + Marshal.SizeOf(com));
+                }
+                UserNativeFunction.SerialPort_FreePortNameList(lpPortList);
+                cb_serialport.SelectedItem = 0;
             }
-            UserNativeFunction.SerialPort_FreePortNameList( lpPortList );
-            cb_serialport.SelectedItem = 0;
         }
 
         private void btn_openserial_Click( object sender, EventArgs e )

@@ -20,8 +20,8 @@ namespace MainUI
         [DllImport( "serialport.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
         public static extern int SerialPort_GetPortNames( ref IntPtr lpPortList, ref uint lpCount );
 
-        [DllImport( "serialport.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
-        public static extern void SerialPort_FreePortNameList( IntPtr portList );
+       // [DllImport( "serialport.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
+        //public static extern void SerialPort_FreePortNameList( IntPtr portList );
     }
     #endregion
 

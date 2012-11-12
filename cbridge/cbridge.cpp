@@ -43,13 +43,13 @@ int DispatchCommand(char * command, char *arg1, int arg2)
 
 int InitializeComponent()
 {
+	InitializeSerialPort();
     // 初始化 Logger
     Logger_create();    
     // 初始化LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
-    // RegisterFunctions(lua);
-    if(luaL_dofile(lua, "Controller.lua"))
+    if(luaL_dofile(lua, "./script/Controller.lua"))
         log_error("load file <Controller.lua> fail :: %s", lua_tostring(lua, -1));
     else
     {

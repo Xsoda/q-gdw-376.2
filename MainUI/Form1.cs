@@ -26,7 +26,7 @@ namespace MainUI
                     cb_serialport.Items.Add(Marshal.PtrToStringAuto(Marshal.ReadIntPtr(com)));
                     com = (IntPtr)(com.ToInt64() + Marshal.SizeOf(com));
                 }
-                UserNativeFunction.SerialPort_FreePortNameList(lpPortList);
+                //UserNativeFunction.SerialPort_FreePortNameList(lpPortList);
                 cb_serialport.SelectedItem = 0;
             }
         }
@@ -43,6 +43,7 @@ namespace MainUI
             else
             {
                 MessageBox.Show( "请选择一个串口~~", "错误", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning );
+                UserNativeFunction.DispatchCommand(Marshal.StringToHGlobalAnsi("OPEN"), Marshal.StringToHGlobalAnsi("COM0"), 0);
             }
         }
     }

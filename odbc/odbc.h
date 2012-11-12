@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include <odbcinst.h>
 #include <odbcss.h>
+#include <sqlucode.h>
+#include <sql.h>
 
 typedef struct connection {
   SQLHENV henv;
@@ -25,17 +27,22 @@ typedef struct statement {
   column_info *ci;
 } statement;
 
-enum {
+typedef enum {
   VALUE_INTEGER,
   VALUE_STRING,
   VALUE_TIME,
 } VALUE;
-#if 0
+
+
 connection *create_connection(char *dsn);
 statement *create_statement(connection *conn);
 bool prepare_statement(statement *stmt, char *sql);
-bool set_value_type(statement *stmt, int index, VALUE type);
-bool execute(statement *stmt, char *sql);
+bool set_value_type(statement *stmt, int index, VALUE type, void *value);
+bool execute(statement *stmt);
+bool reset_stmt(statement *stmt);
+#if 0
+
+
 bool execut_direct(statement *stmt, char *sql);
 unsigned int get_update_count(statement *stmt);
 bool absolute(statement *stmt, unsigned int linum);

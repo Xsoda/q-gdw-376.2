@@ -8,8 +8,15 @@
 #ifndef _SERIALPORT_H_
 #define _SERIALPORT_H_
 
-/****************************************************************************/
-// Public Enums
+#if defined __cplusplus
+extern "C" {
+#endif
+
+#include <Windows.h>
+#include <tchar.h>
+#include <stdio.h>
+
+#define SERIAL_PORT_GLOBAL
 
 typedef enum tagFlowControl {
     NoFlowControl,
@@ -34,9 +41,8 @@ typedef struct tagConfig {
     BOOL fDiscardNull;
     FlowControl flowControl;
 } Config, *LPConfig;
-
+#if 0
 typedef struct _tagSerialPort {
-    HWND hwndParent;
     LPTSTR lpComm;
     HANDLE hComm;
     BOOL fEndListner; //May '11 Added
@@ -50,7 +56,65 @@ typedef struct _tagSerialPort {
     DWORD dwPortCount;
     FlowControl flowControl;
 } SerialPort  , *LPSerialPort;
+#endif
+typedef struct {
+	LPTSTR *lpPortlist;
+    DWORD dwPortCount;
+	HANDLE hPort;
+	BOOL hPort_Opened;
+	HANDLE hRcv;
+	DWORD ThreadId;
+	DWORD objResult;
+	DWORD ThreadCode;
+//	int waitTimeInMs;
+	BOOL Terminate;
+	CRITICAL_SECTION rxLock;
+	DWORD rxErrors;
+	int rxIndex;
+	int rxReadPos;
+	int maxRetries;
+	int rxReceived;
+	DWORD rxBufLen;
+	BOOL rxLockInitialized;
+	OVERLAPPED ov_Read, ov_Write;
+	unsigned char rxBuffer[];
+} SerialPort, *LPSerialPort;
+
+#if ！defined SERIAL_PORT_GLOBAL
+BOOL OpenComPort( int port, int rate, int parity, int retries );
+BOOL CloseComPort( LPSerialPort *sp );
+
+BOOL WriteComPort( LPSerialPort *sp, char *sendString, unsigned char txCount );
+BOOL FlushComPort( LPSerialPort *sp );
+BOOL ClearRx( LPSerialPort *sp );
+BOOL ReadRxChar( LPSerialPort *sp, unsigned char *c );
+BOOL WaitXmitDone( LPSerialPort *sp );
+BOOL WriteComSignal(LPSerialPort *sp, DWORD func );
+void PurgeRx();
+void DisplaySystemError(DWORD errorCode);
+int ReadData( void *buffer, int limit );
+LONG SerialPort_GetPortNames(LPSerialPort sp, LPTSTR **lpPortList, LPDWORD lpCount);
+LPSerialPort InitializeSerialPort();
+#else
 LONG SerialPort_GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount);
-VOID SerialPort_FreePortNameList(LPTSTR * portList);
+BOOL OpenComPort( int port, int rate, int parity, int retries );
+BOOL CloseComPort( void );
+BOOL WriteComPort( char *sendString, unsigned char txCount );
+BOOL FlushComPort( void );
+BOOL ClearRx( void );
+BOOL ReadRxChar( unsigned char *c );
+BOOL WaitXmitDone( void );
+BOOL WriteComSignal( DWORD func );
+void PurgeRx();
+void DisplaySystemError(DWORD errorCode);
+int ReadData( void *buffer, int limit );
+int InitializeSerialPort();
+#endif
+ULONG RxThread( void *arg );
+
+
+#if defined __cplusplus
+}
+#endif
 
 #endif /* _SERIALPORT_H_ */

@@ -47,15 +47,6 @@ static const luaL_Reg logger[] = {
 
 int luaopen_luawrapper(lua_State *lua)
 {
-    /*
-    const luaL_Reg *lib = logger;
-    for (; lib->func != NULL; lib++)
-    {
-        lua_pushcfunction(lua, lib->func);
-        lua_setglobal(lua, lib->name);
-    }
-    */
-    //luaL_newlib(lua, logger);
     luaL_newlibtable(lua, logger);
     luaL_setfuncs(lua, logger, 0);
     return 1;

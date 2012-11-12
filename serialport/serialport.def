@@ -1,4 +1,4 @@
 LIBRARY serialport
 EXPORTS
+	InitializeSerialPort
 	SerialPort_GetPortNames
-	SerialPort_FreePortNameList

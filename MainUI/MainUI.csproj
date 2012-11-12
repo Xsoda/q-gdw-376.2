@@ -78,7 +78,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(SolutionDir)Controller.lua $(TargetDir)Controller.lua</PostBuildEvent>
+    <PostBuildEvent>cd $(TargetDir)
+md script
+cd script
+copy $(SolutionDir)script\*.lua $(TargetDir)script\*.lua</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

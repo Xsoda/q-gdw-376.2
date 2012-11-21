@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serialport", "serialport\se
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "odbc", "odbc\odbc.vcxproj", "{C1378715-950E-4344-A27B-D3B6AEAF5444}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "internal", "internal\internal.vcxproj", "{1A0304C9-9430-4182-8551-634C7D765B65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -113,6 +115,18 @@ Global
 		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|Win32.Build.0 = Release|Win32
 		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|x86.ActiveCfg = Release|Win32
 		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|x86.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Win32.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|x86.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|x86.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Win32.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Win32.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

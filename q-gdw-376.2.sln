@@ -11,6 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "logger\logger.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cbridge", "cbridge\cbridge.vcxproj", "{CB40A677-AAE3-4D39-A1CC-A55241A35221}"
 	ProjectSection(ProjectDependencies) = postProject
+		{1CBA6813-D856-4004-915D-08D1956052B2} = {1CBA6813-D856-4004-915D-08D1956052B2}
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE} = {8AC842C2-0629-4CA8-88F0-F1E506E299FE}
 	EndProjectSection
 EndProject

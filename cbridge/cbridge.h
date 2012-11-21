@@ -22,6 +22,7 @@ extern "C" {
 #include "../luawrapper/luawrapper.h"
 #include "../serialport/serialport.h"
 
+
 #if defined _DEBUG
 #pragma comment(lib, "../Debug/lua.lib")
 #pragma comment(lib, "../Debug/logger.lib")

@@ -62,6 +62,7 @@ int ReleaseComponent()
 {
     log_info("release all component");
     log_info("-----------------------------------\n");
+	ReleaseSerialPort();
     Logger_release();
     lua_close(lua);
     return 0;

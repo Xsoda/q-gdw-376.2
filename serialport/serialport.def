@@ -1,4 +1,7 @@
 LIBRARY serialport
 EXPORTS
 	InitializeSerialPort
-	SerialPort_GetPortNames
+	ReleaseSerialPort
+	SerialPort_Proc
+	AddHook
+	RemoveHook

@@ -17,8 +17,15 @@
 *                May '11 - Several bug fixes (labled in code as follows: //May '11 ...)
 *
 \****************************************************************************/
-#ifndef SERIALPORT_H 
-#define SERIALPORT_H
+#ifndef _SERIALPORT_H_
+#define _SERIALPORT_H_
+
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <tchar.h>
 
 #if defined __cplusplus
 extern "C" {
@@ -73,7 +80,7 @@ typedef enum tagFlowControl {
 /****************************************************************************/
 // Public Structs
 
-typedef struct tagConfig {
+typedef struct _tagConfig {
     UINT mask;
     LPTSTR pszPortName;
     INT cchTextMax;
@@ -120,11 +127,11 @@ typedef struct _tagINSTANCEDATA {
 
 /****************************************************************************/
 // Prototypes
-LRESULT CALLBACK SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL InitializeSerialPort();
 BOOL ReleaseSerialPort();
 BOOL AddHook(LPHOOK * lpHook, int (*func)(void *, void *));
-
+BOOL RemoveHook();
 /****************************************************************************/
 // Macroes
 
@@ -155,4 +162,4 @@ BOOL AddHook(LPHOOK * lpHook, int (*func)(void *, void *));
 }
 #endif
 
-#endif //SERIALPORT_H
+#endif // _SERIALPORT_H_

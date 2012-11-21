@@ -20,14 +20,6 @@
 //#define UNICODE
 //#define _UNICODE
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <tchar.h>
 #include "SerialPort.h"
 
 #define NELEMS(a) (sizeof(a) / sizeof((a)[0]))
@@ -948,7 +940,7 @@ VOID SerialPort_NotifyDispatcher(DWORD dwEvtMask)
 *
 \****************************************************************************/
 
-LRESULT CALLBACK SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{

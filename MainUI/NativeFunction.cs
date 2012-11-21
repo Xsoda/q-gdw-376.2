@@ -18,10 +18,8 @@ namespace MainUI
         public extern static int DispatchCommand( IntPtr command, IntPtr arg1, int arg2 );
 
         [DllImport( "serialport.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
-        public static extern int SerialPort_GetPortNames( ref IntPtr lpPortList, ref uint lpCount );
+        public static extern IntPtr SerialPort_Proc( int msg, IntPtr lParam, IntPtr wparam );
 
-       // [DllImport( "serialport.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl )]
-        //public static extern void SerialPort_FreePortNameList( IntPtr portList );
     }
     #endregion
 

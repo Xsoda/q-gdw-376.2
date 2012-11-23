@@ -3,5 +3,4 @@ EXPORTS
 	InitializeSerialPort
 	ReleaseSerialPort
 	SerialPort_Proc
-	AddHook
-	RemoveHook
+	SetSerialPortCallback

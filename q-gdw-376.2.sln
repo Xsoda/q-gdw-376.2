@@ -24,8 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainUI", "MainUI\MainUI.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68650A8E-3D17-4532-9864-61A888C58368}"
 	ProjectSection(SolutionItems) = preProject
-		script\Controller.lua = script\Controller.lua
+		script\controller.lua = script\controller.lua
 		script\logger.lua = script\logger.lua
+		script\odbc.lua = script\odbc.lua
+		script\serialport.lua = script\serialport.lua
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serialport", "serialport\serialport.vcxproj", "{1CBA6813-D856-4004-915D-08D1956052B2}"

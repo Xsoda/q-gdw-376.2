@@ -103,10 +103,11 @@ typedef struct _tagConfig {
 
 #define SPCF_ALLSETTINGS SPCF_PORTNAME|SPCF_BAUDRATE|SPCF_PARITY| \
                           SPCF_DATABITS|SPCF_STOPBITS|SPCF_NULLDISCARD|SPCF_FLOWCONT
-typedef struct _tagHook {
-	int (*func)(void *, void *);
-	struct _tagHook *next;
-}HOOK, *LPHOOK;
+typedef struct _tagCallback {
+	int (*error)(char *error_info);
+	int (*received)();
+	int (*pin_change)(int signal);
+}Callback, *LPCallback;
 
 typedef struct _tagINSTANCEDATA {
 	LPTSTR lpComm;
@@ -121,8 +122,7 @@ typedef struct _tagINSTANCEDATA {
 	LPTSTR *lpPortlist;
 	DWORD dwPortCount;
 	FLOWCONTROL flowControl;
-	LPHOOK data_received;
-	LPHOOK error;
+	Callback sp_callback;
 } INSTANCEDATA  , *LPINSTANCEDATA;
 
 /****************************************************************************/
@@ -130,8 +130,9 @@ typedef struct _tagINSTANCEDATA {
 LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL InitializeSerialPort();
 BOOL ReleaseSerialPort();
-BOOL AddHook(LPHOOK * lpHook, int (*func)(void *, void *));
-BOOL RemoveHook();
+int SetSerialPortCallback(int (*error)(char*),
+						  int (*received)(),
+						  int (*pin_change)(int));
 /****************************************************************************/
 // Macroes
 

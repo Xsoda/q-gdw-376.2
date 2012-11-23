@@ -303,22 +303,24 @@ VOID TerminateListner(VOID)
 
 BOOL SerialPort_OnCreate()
 {
-	LPINSTANCEDATA inst = g_lpInst;
-	if (!inst)
+	LPINSTANCEDATA lpInst = g_lpInst;
+	if (!lpInst)
 		return false;
-	inst->dwEventThread = 0;
-	inst->dwPortCount = 0;
-	inst->lpComm = NULL;// initialize the buffer pointer
-	SetStringBuffer(&inst->lpComm,_T("COM1"));
-	inst->flowControl = CtsRtsFlowControl;
-	inst->hComm = INVALID_HANDLE_VALUE;
-	inst->hEventThread = NULL;
-	inst->dwReceiveByteThreshold = 1;
-	inst->lpPortlist = NULL;
-	inst->hStartEvent = CreateEvent(NULL, TRUE, TRUE, NULL); //Manual reset events
-	inst->hIOEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
-	inst->hListnerEvent = CreateEvent(NULL, FALSE, FALSE, NULL); //new AutoResetEvent(false) = CreateEvent(NULL, FALSE, FALSE, NULL);    //AutoResetEvent;
-
+	lpInst->dwEventThread = 0;
+	lpInst->dwPortCount = 0;
+	lpInst->lpComm = NULL;// initialize the buffer pointer
+	SetStringBuffer(&lpInst->lpComm,_T("COM1"));
+	lpInst->flowControl = CtsRtsFlowControl;
+	lpInst->hComm = INVALID_HANDLE_VALUE;
+	lpInst->hEventThread = NULL;
+	lpInst->dwReceiveByteThreshold = 1;
+	lpInst->lpPortlist = NULL;
+	lpInst->hStartEvent = CreateEvent(NULL, TRUE, TRUE, NULL); //Manual reset events
+	lpInst->hIOEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+	lpInst->hListnerEvent = CreateEvent(NULL, FALSE, FALSE, NULL); //new AutoResetEvent(false) = CreateEvent(NULL, FALSE, FALSE, NULL);    //AutoResetEvent;
+	lpInst->sp_callback.error = NULL;
+	lpInst->sp_callback.pin_change = NULL;
+	lpInst->sp_callback.received = NULL;
 	return true;
 }
 
@@ -1054,12 +1056,18 @@ LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam)
 		return (LRESULT)g_lpInst->dwReceiveByteThreshold;
 
 	case SPM_DATARECEIVED:
+		if (g_lpInst->sp_callback.received)
+			g_lpInst->sp_callback.received();
 		break;
 
 	case SPM_PINCHANGED:
+		if (g_lpInst->sp_callback.pin_change)
+			g_lpInst->sp_callback.pin_change((int)wParam);
 		break;
 
 	case SPM_ERRORRECEIVED:
+		if (g_lpInst->sp_callback.error)
+			g_lpInst->sp_callback.error((char *)lParam);
 		break;
 
 	}
@@ -1092,26 +1100,12 @@ BOOL ReleaseSerialPort()
 	return true;
 }
 
-BOOL AddHook(LPHOOK *lpHook, int (*func)(void *, void *))
+int SetSerialPortCallback(int (*error)(char*),
+						  int (*received)(),
+						  int (*pin_change)(int))
 {
-	LPHOOK lph;
-	if ((lph = (LPHOOK)malloc(sizeof HOOK)) == NULL)
-		return false;
-	lph->func = func;
-	lph->next = *lpHook;
-	*lpHook = lph;
-	return true;
-}
-
-BOOL RemoveHook(LPHOOK *lpHook)
-{
-	LPHOOK lph;
-	if (lpHook && *lpHook)
-	{
-		lph = *lpHook;
-		*lpHook = lph->next;
-		free(lph);
-		return true;
-	}
-	return false;
+	g_lpInst->sp_callback.error = error;
+	g_lpInst->sp_callback.received = received;
+	g_lpInst->sp_callback.pin_change = pin_change;
+	return 1;
 }

@@ -13,7 +13,10 @@ static int lua_Dispatch(char * command, char *arg1, int arg2)
     int ret;
     lua_getglobal(lua, "Dispatch");
     lua_pushstring(lua, command);
-    lua_pushstring(lua, arg1);
+	if (!arg1)
+		lua_pushstring(lua, "(null)");
+	else
+		lua_pushstring(lua, arg1);
     lua_pushnumber(lua, arg2);
     if (lua_pcall(lua, 3, 1, 0) != LUA_OK)
     {
@@ -33,12 +36,14 @@ static int lua_Dispatch(char * command, char *arg1, int arg2)
 
 int DispatchCommand(char * command, char *arg1, int arg2)
 {
+	int ret;
     log_info("Dispatch command -> %s, arg1 -> %s, arg2 -> %d", command, arg1, arg2);
-    if (lua_Dispatch(command, arg1, arg2))
+	ret = lua_Dispatch(command, arg1, arg2);
+    if (!ret)
         log_error("DispatchCommand error");
     else
         log_info("DispatchCommand success");
-    return 0;
+    return ret;
 }
 
 int InitializeComponent()
@@ -49,11 +54,11 @@ int InitializeComponent()
     // 初始化LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
-    if(luaL_dofile(lua, "./script/Controller.lua"))
-        log_error("load file <Controller.lua> fail :: %s", lua_tostring(lua, -1));
+    if(luaL_dofile(lua, "./script/controller.lua"))
+        log_error("load file <controller.lua> fail :: %s", lua_tostring(lua, -1));
     else
     {
-        log_info("load file <Controller.lua> success");       
+        log_info("load file <controller.lua> success");       
     }
     return 0;
 }

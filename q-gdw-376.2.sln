@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawrapper", "luawrapper\luawrapper.vcxproj", "{7F090DEA-BF7C-49FE-B890-9F973454F04C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B371FBB6-0907-4B31-B22C-57D9A14CEF09} = {B371FBB6-0907-4B31-B22C-57D9A14CEF09}
@@ -11,6 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "logger\logger.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cbridge", "cbridge\cbridge.vcxproj", "{CB40A677-AAE3-4D39-A1CC-A55241A35221}"
 	ProjectSection(ProjectDependencies) = postProject
+		{1CBA6813-D856-4004-915D-08D1956052B2} = {1CBA6813-D856-4004-915D-08D1956052B2}
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE} = {8AC842C2-0629-4CA8-88F0-F1E506E299FE}
 	EndProjectSection
 EndProject
@@ -23,10 +24,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainUI", "MainUI\MainUI.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68650A8E-3D17-4532-9864-61A888C58368}"
 	ProjectSection(SolutionItems) = preProject
-		Controller.lua = Controller.lua
+		script\controller.lua = script\controller.lua
+		script\logger.lua = script\logger.lua
+		script\odbc.lua = script\odbc.lua
+		script\serialport.lua = script\serialport.lua
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serialport", "serialport\serialport.vcxproj", "{1CBA6813-D856-4004-915D-08D1956052B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "odbc", "odbc\odbc.vcxproj", "{C1378715-950E-4344-A27B-D3B6AEAF5444}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "internal", "internal\internal.vcxproj", "{1A0304C9-9430-4182-8551-634C7D765B65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +106,30 @@ Global
 		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Win32.ActiveCfg = Release|Win32
 		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|Win32.Build.0 = Release|Win32
 		{1CBA6813-D856-4004-915D-08D1956052B2}.Release|x86.ActiveCfg = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|Win32.Build.0 = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|x86.ActiveCfg = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Debug|x86.Build.0 = Debug|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|Win32.ActiveCfg = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|Win32.Build.0 = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|x86.ActiveCfg = Release|Win32
+		{C1378715-950E-4344-A27B-D3B6AEAF5444}.Release|x86.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|Win32.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|x86.ActiveCfg = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Debug|x86.Build.0 = Debug|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Win32.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Win32.Build.0 = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.ActiveCfg = Release|Win32
+		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

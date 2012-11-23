@@ -11,21 +11,24 @@ namespace MainUI
 {
     public partial class Form1 : Form
     {
+        const int SPM_GETPORTNAMES = 0x02;
         public Form1()
         {
             InitializeComponent();
             // Initialize the serial port list
-            IntPtr lpPortList = new IntPtr();
-            uint count = new uint();
-            UserNativeFunction.SerialPort_GetPortNames( ref lpPortList, ref count );
-            IntPtr com = lpPortList;
-            for ( uint i = 0; i < count; i++ )
+            IntPtr lpCount = Marshal.AllocCoTaskMem(sizeof(uint));
+            IntPtr lpPortList = UserNativeFunction.SerialPort_Proc(SPM_GETPORTNAMES, lpCount, IntPtr.Zero);
+            int count = Marshal.ReadInt32(lpCount);
+            if (count != 0)
             {
-                cb_serialport.Items.Add( Marshal.PtrToStringAuto( Marshal.ReadIntPtr( com ) ) );
-                com = (IntPtr)( com.ToInt64() + Marshal.SizeOf( com ));
+                IntPtr com = lpPortList;
+                for (uint i = 0; i < count; i++)
+                {
+                    cb_serialport.Items.Add(Marshal.PtrToStringAuto(Marshal.ReadIntPtr(com)));
+                    com = (IntPtr)(com.ToInt64() + Marshal.SizeOf(com));
+                }
+                cb_serialport.SelectedItem = 0;
             }
-            UserNativeFunction.SerialPort_FreePortNameList( lpPortList );
-            cb_serialport.SelectedItem = 0;
         }
 
         private void btn_openserial_Click( object sender, EventArgs e )
@@ -40,6 +43,7 @@ namespace MainUI
             else
             {
                 MessageBox.Show( "请选择一个串口~~", "错误", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning );
+                UserNativeFunction.DispatchCommand(Marshal.StringToHGlobalAnsi("OPEN"), Marshal.StringToHGlobalAnsi("COM0"), 0);
             }
         }
     }

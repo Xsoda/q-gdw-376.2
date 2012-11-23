@@ -1,4 +1,6 @@
 LIBRARY serialport
 EXPORTS
-	SerialPort_GetPortNames
-	SerialPort_FreePortNameList
+	InitializeSerialPort
+	ReleaseSerialPort
+	SerialPort_Proc
+	SetSerialPortCallback

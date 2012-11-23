@@ -19,14 +19,16 @@ extern "C" {
 
 // include logger
 #include "../logger/logger.h"
-
+#include "../serialport/serialport.h"
 
 #if defined _DEBUG
 #pragma comment(lib, "../Debug/logger.lib")
 #pragma comment(lib, "../Debug/lua.lib")
+#pragma comment(lib, "../Debug/serialport.lib")
 #else
 #pragma comment(lib, "../Release/logger.lib")
 #pragma comment(lib, "../Release/lua.lib")
+#pragma comment(lib, "../Release/serialport.lib")
 #endif
 
 int luaopen_luawrapper(lua_State *lua);

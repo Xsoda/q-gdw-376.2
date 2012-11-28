@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawrapper", "luawrapper\luawrapper.vcxproj", "{7F090DEA-BF7C-49FE-B890-9F973454F04C}"
 	ProjectSection(ProjectDependencies) = postProject
+		{1CBA6813-D856-4004-915D-08D1956052B2} = {1CBA6813-D856-4004-915D-08D1956052B2}
 		{B371FBB6-0907-4B31-B22C-57D9A14CEF09} = {B371FBB6-0907-4B31-B22C-57D9A14CEF09}
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE} = {8AC842C2-0629-4CA8-88F0-F1E506E299FE}
 	EndProjectSection
@@ -13,6 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cbridge", "cbridge\cbridge.
 	ProjectSection(ProjectDependencies) = postProject
 		{1CBA6813-D856-4004-915D-08D1956052B2} = {1CBA6813-D856-4004-915D-08D1956052B2}
 		{8AC842C2-0629-4CA8-88F0-F1E506E299FE} = {8AC842C2-0629-4CA8-88F0-F1E506E299FE}
+		{7F090DEA-BF7C-49FE-B890-9F973454F04C} = {7F090DEA-BF7C-49FE-B890-9F973454F04C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "lua\lua.vcxproj", "{8AC842C2-0629-4CA8-88F0-F1E506E299FE}"
@@ -35,6 +37,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "odbc", "odbc\odbc.vcxproj", "{C1378715-950E-4344-A27B-D3B6AEAF5444}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "internal", "internal\internal.vcxproj", "{1A0304C9-9430-4182-8551-634C7D765B65}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parse", "parse\parse.vcxproj", "{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +134,18 @@ Global
 		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|Win32.Build.0 = Release|Win32
 		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.ActiveCfg = Release|Win32
 		{1A0304C9-9430-4182-8551-634C7D765B65}.Release|x86.Build.0 = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|Win32.Build.0 = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|x86.ActiveCfg = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Debug|x86.Build.0 = Debug|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|Win32.ActiveCfg = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|Win32.Build.0 = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|x86.ActiveCfg = Release|Win32
+		{6E3FE8EE-33F8-4E80-9E72-6E4431E91CA7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

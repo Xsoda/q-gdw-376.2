@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		script\controller.lua = script\controller.lua
 		script\logger.lua = script\logger.lua
 		script\odbc.lua = script\odbc.lua
+		script\packet.lua = script\packet.lua
+		script\parse.lua = script\parse.lua
 		script\serialport.lua = script\serialport.lua
 	EndProjectSection
 EndProject

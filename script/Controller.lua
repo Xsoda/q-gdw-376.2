@@ -18,7 +18,8 @@ function pinchange_hook(pin)
 end
 
 function OpenSerial(arg1, arg2)
-    logger.log_info("OpenSerial -> "..arg1.." "..arg2)
+	local a = 0
+    logger.log_info("OpenSerial -> "..arg1.." "..arg2..afn[a])
     serialport.set_error_hook(error_hook)
     serialport.set_pinchange_hook(pinchange_hook)
     serialport.set_received_hook(received_hook)

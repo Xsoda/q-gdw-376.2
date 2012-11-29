@@ -216,6 +216,132 @@ int pin_change(int pin)
 	return 0;
 }
 #pragma endregion serial port module callback
+
+#pragma region parse datagram wrapper
+static int lua_ParseDatagram(lua_State * lua)
+{
+	// lua table to bytes
+	int len = 0, idx;
+	__u8 *data;
+	Datagram *dg;
+	if ((data = (__u8 *)malloc(1024)) == NULL)
+	{
+		lua_pushnil(lua);
+		return 0;
+	}
+	idx = lua_gettop(lua);
+	lua_pushnil(lua);
+	while (lua_next(lua, idx))
+	{
+		data[len++] = lua_tointeger(lua, -1);
+		lua_pop(lua, 1);
+	}
+	if (len)
+	{
+		dg = ParseDatagram(data, len);
+
+		lua_newtable(lua);
+		lua_pushstring(lua, "Len");
+		lua_pushinteger(lua, dg->len);
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "Dir");
+		lua_pushinteger(lua, dg->prefix->control.DIR);
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "RouterId");
+		lua_pushinteger(lua, dg->prefix->info.info_down.routerID);
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "CommModuleId");
+		lua_pushinteger(lua, dg->prefix->info.info_down.commModuleID);
+		lua_rawset(lua, -3);
+				
+		lua_pushstring(lua, "RelayLevel");
+		lua_pushinteger(lua, dg->prefix->info.info_down.relayLevel);
+		lua_rawset(lua, -3);
+				
+		lua_pushstring(lua, "ChannelId");
+		lua_pushinteger(lua, dg->prefix->info.info_down.channelID);
+		lua_rawset(lua, -3);
+				
+		lua_pushstring(lua, "Afn");
+		lua_pushinteger(lua, dg->infix->AFN);
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "Fn");
+		lua_pushinteger(lua, GetFn(dg->infix->DT1, dg->infix->DT2));
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "DataLen");
+		lua_pushinteger(lua, dg->userDataLen);
+		lua_rawset(lua, -3);
+
+		lua_pushstring(lua, "Data");
+		lua_newtable(lua);
+		for (int i = 1; i <= dg->userDataLen; i++)
+		{
+			lua_pushinteger(lua, i);
+			lua_pushinteger(lua, dg->userData[i - 1]);
+			lua_rawset(lua, -3);
+		}
+		lua_rawset(lua, -3);
+
+		if (dg->prefix->info.info_down.commModuleID)
+		{
+			if (dg->packet_addr.sourceAddr)
+			{
+				lua_pushstring(lua, "SourceAddr");
+				lua_newtable(lua);
+				for (int i = 1; i <= 6; i++)
+				{
+					lua_pushinteger(lua, i);
+					lua_pushinteger(lua, dg->packet_addr.sourceAddr[i]);
+					lua_rawset(lua, -3);
+				}
+				lua_rawset(lua, -3);
+			}
+			if (dg->packet_addr.destinationAddr)
+			{
+				lua_pushstring(lua, "SourceAddr");
+				lua_newtable(lua);
+				for (int i = 1; i <= 6; i++)
+				{
+					lua_pushinteger(lua, i);
+					lua_pushinteger(lua, dg->packet_addr.destinationAddr[i]);
+					lua_rawset(lua, -3);
+				}
+				lua_rawset(lua, -3);
+			}
+			if (dg->packet_addr.relayAddr && dg->prefix->info.info_down.relayLevel)
+			{
+				lua_pushstring(lua, "RelayAddr");
+				lua_newtable(lua);
+				for (int i = 1; i <= dg->prefix->info.info_down.relayLevel; i++)
+				{
+					lua_pushinteger(lua, i);
+					lua_newtable(lua);
+					for (int j = 1; j <= 6; j++)
+					{
+						lua_pushinteger(lua, j);
+						lua_pushinteger(lua, dg->packet_addr.relayAddr[(i - 1) * 6 + (j - 1)]);
+						lua_rawset(lua, -3);
+					}
+					lua_rawset(lua, -3);
+				}
+				lua_rawset(lua, -3);
+			}
+		}
+	}
+    return 1;
+}
+
+static int lua_ParsePacket(lua_State *lua)
+{
+	return 1;
+}
+#pragma endregion parse datagram wrapper
+
 static const luaL_Reg logger[] = {
     // logger.dll
     {"log_info", lua_log_info},
@@ -229,6 +355,8 @@ static const luaL_Reg logger[] = {
     {"serialport_set_received_callback", lua_serialport_set_received_callback},
     {"serialport_set_pinchange_callback", lua_serialport_set_pinchange_callback},
     {"serialport_set_error_callback", lua_serialport_set_error_callback},
+	{"ParseDatagram", lua_ParseDatagram},
+	{"ParsePacket", lua_ParsePacket},
     {0, 0}
 };
 

@@ -1,2 +1,5 @@
 LIBARAY parse
-EXPORT
+EXPORTS
+	ParseDatagram
+	ParsePacket
+	GetFn

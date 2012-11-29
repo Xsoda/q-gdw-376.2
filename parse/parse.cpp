@@ -137,3 +137,10 @@ Packet *ParsePacket(__u8 *data, __u8 len)
 	}
 	return pt;
 }
+
+__u8 GetFn(__u8  dt1, __u8 dt2)
+{
+    int i = 1, j = 0;
+    while( !(dt1 & (i << j++)) && (j <= 8));
+    return dt1 ? dt2 * 8 + j : 0;
+}

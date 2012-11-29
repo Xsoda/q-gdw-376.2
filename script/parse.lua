@@ -23,4 +23,11 @@
 	}
 --]]
 
+Datagram = {
+	parse = function (t)
+		local wrapper = require("luawrapper")
+		return wrapper.ParseDatagram(t)
+	end,
+}
+
 		

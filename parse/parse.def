@@ -2,3 +2,4 @@ LIBARAY parse
 EXPORTS
 	ParseDatagram
 	ParsePacket
+	GetFn

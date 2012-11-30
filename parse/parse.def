@@ -1,4 +1,4 @@
-LIBARAY parse
+LIBRARY parse
 EXPORTS
 	ParseDatagram
 	ParsePacket

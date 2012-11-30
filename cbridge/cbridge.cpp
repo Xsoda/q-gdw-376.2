@@ -1,6 +1,6 @@
 // -*- encoding: utf-8-unix; -*-
 // File-name:    <cbridge.cpp>
-// Author:       <å°è‹æ‰“>
+// Author:       <Ğ¡ËÕ´ò>
 // Create:       <Thu Oct 25 16:39:42 2012>
 // Time-stamp:   <Thursday October 25, 16:39:44 2012>
 
@@ -27,10 +27,10 @@ static int lua_Dispatch(char * command, char *arg1, int arg2)
     {
         if (!lua_isnumber(lua, -1))
             log_error("Dispatch function must return a number");        
-        ret = lua_tonumber(lua, -1);
+        ret = (int)lua_tonumber(lua, -1);
         log_info("lua_Dispatch success -> %d", ret);
         lua_pop(lua, 1);
-        return ret;
+        return (int)ret;
     }
 }
 
@@ -49,9 +49,9 @@ int DispatchCommand(char * command, char *arg1, int arg2)
 int InitializeComponent()
 {
 	InitializeSerialPort();
-    // åˆå§‹åŒ– Logger
+    // ³õÊ¼»¯ Logger
     Logger_create();    
-    // åˆå§‹åŒ–LUA
+    // ³õÊ¼»¯LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
     if(luaL_dofile(lua, "./script/controller.lua"))

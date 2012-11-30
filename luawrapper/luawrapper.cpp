@@ -1,4 +1,4 @@
-// -*- encoding: utf-8-unix; -*-
+﻿// -*- encoding: utf-8-unix; -*-
 // File-name:    <luawrapper.cpp>
 // Author:       <小苏打>
 // Create:       <Thu Oct 25 16:40:31 2012>
@@ -6,7 +6,13 @@
 
 #include "luawrapper.h"
 
-static int ref_received, ref_error, ref_pin;
+typedef struct _ref_list_received{
+	int func_ref;
+	struct _ref_list_received *next;
+} ref_list_received;
+
+static ref_list_received *rl_received = NULL;
+static int ref_error, ref_pin;
 static lua_State *_lua;
 static unsigned char spbuf[1024];
 static unsigned char spWrite[1024];
@@ -127,16 +133,37 @@ static int lua_serialport_write(lua_State *lua)
 }
 static int lua_serialport_set_received_callback(lua_State *lua)
 {
-	if (ref_received)
-		luaL_unref(lua, LUA_REGISTRYINDEX, ref_received);
-	int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-	ref_received = ref;
-	if ( ref == LUA_REFNIL )
+	ref_list_received *rlr;
+	if ((rlr = (ref_list_received *)malloc(sizeof *rlr)) == NULL)
 	{
-		log_error("create ref fail in lua_serialport_set_received_callback");
+		log_error("malloc fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
+		return 0;
+	}
+	rlr->func_ref = luaL_ref(lua, LUA_REGISTRYINDEX);
+	if ( rlr->func_ref == LUA_REFNIL )
+	{
+		log_error("create ref fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
+		free(rlr);
+	}
+	else
+	{
+		rlr->next = rl_received;
+		rl_received = rlr;
 	}
 	lua_pop(lua, -1);
     return 1;
+}
+
+static int lua_serialport_remove_received_callback(lua_State *lua)
+{
+	ref_list_received *rlr;
+	if (rl_received)
+	{
+		rlr = rl_received->next;
+		free(rl_received);
+		rl_received = rlr;
+	}
+	return 1;
 }
 
 static int lua_serialport_set_pinchange_callback(lua_State *lua)
@@ -187,8 +214,8 @@ int error(char *info)
 }
 int received()
 {
-	log_info("enter received in luawrapper %d %d %d", ref_received, ref_error, ref_pin);
-	lua_rawgeti(_lua, LUA_REGISTRYINDEX, ref_received);
+	if (rl_received)
+		lua_rawgeti(_lua, LUA_REGISTRYINDEX, rl_received->func_ref);
 	if (lua_isfunction(_lua, -1))
 		if (lua_pcall(_lua, 0, 1, 0) != LUA_OK)
 			log_error("callback fail: %s", lua_tostring(_lua, -1));
@@ -239,13 +266,60 @@ static int lua_ParseDatagram(lua_State * lua)
 	if (len)
 	{
 		dg = ParseDatagram(data, len);
+		if (!dg)
+		{
+			lua_pushnil(lua);
+			return 1;
+		}
 
 		lua_newtable(lua);
+
+		idx = 0;
+		// 构建一个报文错误表，如报文没有错误则为nil
+		lua_pushstring(lua, "error");
+		if (~dg->packet_status & PACKET_VALID)
+		{
+			// 报文有错误，只显示错误
+			lua_newtable(lua);
+			if (~dg->packet_status & PACKET_VALID_START)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文起始字节无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_LEN)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文长度无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_CHECKSUM)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文校验和无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_END)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文终止字节无效");
+				lua_rawset(lua, -3);
+			}
+		}
+		else
+		{
+			lua_pushnil(lua); //没错误，将error table set nil
+		}
+		lua_rawset(lua, -3);
+		if (idx)
+			return 1; // 报文有误，下面的不用解析了
+
 		lua_pushstring(lua, "Len");
 		lua_pushinteger(lua, dg->len);
 		lua_rawset(lua, -3);
 
 		lua_pushstring(lua, "Dir");
+		log_info("--");
 		lua_pushinteger(lua, dg->prefix->control.DIR);
 		lua_rawset(lua, -3);
 
@@ -256,15 +330,31 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_pushstring(lua, "CommModuleId");
 		lua_pushinteger(lua, dg->prefix->info.info_down.commModuleID);
 		lua_rawset(lua, -3);
-				
+
+		lua_pushstring(lua, "CommMode");
+		lua_pushinteger(lua, dg->prefix->control.commMode);
+		lua_rawset(lua, -3);
+
 		lua_pushstring(lua, "RelayLevel");
 		lua_pushinteger(lua, dg->prefix->info.info_down.relayLevel);
 		lua_rawset(lua, -3);
-				
+		
 		lua_pushstring(lua, "ChannelId");
 		lua_pushinteger(lua, dg->prefix->info.info_down.channelID);
 		lua_rawset(lua, -3);
-				
+
+
+		if (dg->prefix->control.DIR)
+		{
+			lua_pushstring(lua, "MeterChannelFeature");
+			lua_pushinteger(lua, dg->prefix->info.info_up.meterChannelFeature);
+			lua_rawset(lua, -3);
+
+			lua_pushstring(lua, "PhaseLineMark");
+			lua_pushinteger(lua, dg->prefix->info.info_up.phaseLineMark);
+			lua_rawset(lua, -3);
+		}
+
 		lua_pushstring(lua, "Afn");
 		lua_pushinteger(lua, dg->infix->AFN);
 		lua_rawset(lua, -3);
@@ -278,13 +368,18 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_rawset(lua, -3);
 
 		lua_pushstring(lua, "Data");
-		lua_newtable(lua);
-		for (int i = 1; i <= dg->userDataLen; i++)
+		if (dg->userDataLen > 0)
 		{
-			lua_pushinteger(lua, i);
-			lua_pushinteger(lua, dg->userData[i - 1]);
-			lua_rawset(lua, -3);
+			lua_newtable(lua);
+			for (int i = 1; i <= dg->userDataLen; i++)
+			{
+				lua_pushinteger(lua, i);
+				lua_pushinteger(lua, dg->userData[i - 1]);
+				lua_rawset(lua, -3);
+			}
 		}
+		else
+			lua_pushnil(lua);
 		lua_rawset(lua, -3);
 
 		if (dg->prefix->info.info_down.commModuleID)
@@ -353,6 +448,7 @@ static const luaL_Reg logger[] = {
 	{"serialport_read", lua_serialport_read},
 	{"serialport_write", lua_serialport_write},
     {"serialport_set_received_callback", lua_serialport_set_received_callback},
+	{"serialport_remove_received_callback", lua_serialport_remove_received_callback},
     {"serialport_set_pinchange_callback", lua_serialport_set_pinchange_callback},
     {"serialport_set_error_callback", lua_serialport_set_error_callback},
 	{"ParseDatagram", lua_ParseDatagram},

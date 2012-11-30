@@ -15,10 +15,16 @@ serialport = {
         local wrapper = require("luawrapper")
         return wrapper.serialport_write(data)
     end,
-    set_received_hook = function (fn)
-        local wrapper = require("luawrapper")
-        return wrapper.serialport_set_received_callback(fn)
-    end,
+    received_hook = {
+		add = function (fn)
+			local wrapper = require("luawrapper")
+			return wrapper.serialport_set_received_callback(fn)
+		end,
+		remove = function ()
+			local wrapper = require("luawrapper")
+			return wrapper.serialport_remove_received_callback()
+		end
+	},
     set_error_hook = function (fn)
         local wrapper = require("luawrapper")
         return wrapper.serialport_set_received_callback(fn)

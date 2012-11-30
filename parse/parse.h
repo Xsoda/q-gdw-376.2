@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#pragma warning(disable:4200)
 #include <stdlib.h>
 #include <stdio.h>
 #include <Windows.h>

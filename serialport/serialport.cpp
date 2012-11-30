@@ -31,7 +31,7 @@ static VOID SetStringBuffer(LPTSTR *lppBuf, LPTSTR value)
     INT len = _tcslen(value) + 1;
     INT size = len * sizeof(TCHAR);
     *lppBuf = (LPTSTR)realloc(*lppBuf, size);
-    _tcsncpy(*lppBuf, value, len);
+    _tcsncpy_s(*lppBuf, size, value, len);
 }
 
 #pragma region Port Names
@@ -82,7 +82,7 @@ LONG GetPortNames(LPTSTR **lpPortList, LPDWORD lpCount)
 
         myType = REG_SZ;
 
-        for (int port = 0, lenValue, lenName; port < *lpCount; port++)
+        for (unsigned int port = 0, lenValue, lenName; port < *lpCount; port++)
         {
             lenValue = NELEMS(regValue);
             lenName = NELEMS(portName);
@@ -367,7 +367,6 @@ BOOL SerialPort_OnSetConfig(LPCONFIG lpc)
         return fRtn;
 
     DCB dcb;
-	log_debug("serialport handle: 0x%08X", g_lpInst->hComm);
     if (GetCommState(g_lpInst->hComm, &dcb))
     {
         // Desired options (continued)
@@ -452,7 +451,6 @@ BOOL SerialPort_OnSetConfig(LPCONFIG lpc)
         }
         fRtn = SetCommState(g_lpInst->hComm, &dcb);
     }
-	log_debug("leave serialport_setconfig");
     return fRtn;
 }
 
@@ -759,7 +757,6 @@ BOOL SerialPort_OnClose(VOID)
 
 BOOL SerialPort_OnOpen(LPCONFIG lpc)
 {
-	log_debug("enter serianport_OnOpen");
     SerialPort_OnClose();
 
     if(SPCF_PORTNAME & lpc->mask)
@@ -769,7 +766,7 @@ BOOL SerialPort_OnOpen(LPCONFIG lpc)
     }
     TCHAR buf [MAX_PATH];
     LPTSTR format;
-	char buf1[100];
+
 
 #ifdef _UNICODE
     format = _T("\\\\.\\%ls");
@@ -777,19 +774,14 @@ BOOL SerialPort_OnOpen(LPCONFIG lpc)
     format = _T("\\\\.\\%s");
 #endif
     _stprintf_s(buf, format, g_lpInst->lpComm);
-	for (int i = 0, j=0; i < 15; i++)
-		j += sprintf(&buf1[j], "%02X ",(unsigned char)buf[i]);
-	log_error("%s : %s", buf1, buf);
     //Call CreateFile to open the comms port
     g_lpInst->hComm = CreateFile(buf, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
     if (g_lpInst->hComm == INVALID_HANDLE_VALUE)
 	{
-		log_error("CreateFile fail: 0x%X", GetLastError());
         return FALSE;
 	}
     if (!LaunchListner())
 	{
-		log_error("LaunchListner fail");
         return FALSE;
 	}
 
@@ -901,7 +893,7 @@ VOID SerialPort_NotifyDispatcher(DWORD dwEvtMask)
         if (dwEvtMask & EV_RXCHAR)  //A character was received and placed in the input buffer.
         {
             if(0 < g_lpInst->dwReceiveByteThreshold &&
-                g_lpInst->dwReceiveByteThreshold <= SerialPort_BytesToRead(hwnd))
+                g_lpInst->dwReceiveByteThreshold <= SerialPort_BytesToRead())
             {
                 dwCode = EV_RXCHAR;
                 SerialPort_Proc(code, dwCode, 0);
@@ -935,7 +927,6 @@ VOID SerialPort_NotifyDispatcher(DWORD dwEvtMask)
 
 LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	log_debug("enter serialport_proc");
     switch (msg)
     {
     case SPM_CREATE:
@@ -1048,7 +1039,6 @@ LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam)
         return (LRESULT)g_lpInst->dwReceiveByteThreshold;
 
     case SPM_DATARECEIVED:
-		log_info("The msg SPM_DATARECEIVED is received");
         if (g_lpInst->sp_callback.received)
 		{
             g_lpInst->sp_callback.received();
@@ -1076,9 +1066,6 @@ BOOL InitializeSerialPort()
 {
     if ((g_lpInst = (LPINSTANCEDATA)malloc(sizeof INSTANCEDATA)) == NULL)
     {
-#if _DEBUG
-        log_error("malloc() fail in %s:%d:%s", __FILEW__, __LINE__, __FUNCTIONW__);
-#endif
         return false;
     }
     GetPortNames(&g_lpInst->lpPortlist, &g_lpInst->dwPortCount);

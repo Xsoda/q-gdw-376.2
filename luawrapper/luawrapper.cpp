@@ -6,7 +6,13 @@
 
 #include "luawrapper.h"
 
-static int ref_received, ref_error, ref_pin; // 链表存储管理
+typedef struct _ref_list_received{
+	int func_ref;
+	struct _ref_list_received *next;
+} ref_list_received;
+
+static ref_list_received *rl_received = NULL;
+static int ref_error, ref_pin;
 static lua_State *_lua;
 static unsigned char spbuf[1024];
 static unsigned char spWrite[1024];
@@ -127,16 +133,37 @@ static int lua_serialport_write(lua_State *lua)
 }
 static int lua_serialport_set_received_callback(lua_State *lua)
 {
-	if (ref_received)
-		luaL_unref(lua, LUA_REGISTRYINDEX, ref_received);
-	int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-	ref_received = ref;
-	if ( ref == LUA_REFNIL )
+	ref_list_received *rlr;
+	if ((rlr = (ref_list_received *)malloc(sizeof *rlr)) == NULL)
 	{
-		log_error("create ref fail in lua_serialport_set_received_callback");
+		log_error("malloc fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
+		return 0;
+	}
+	rlr->func_ref = luaL_ref(lua, LUA_REGISTRYINDEX);
+	if ( rlr->func_ref == LUA_REFNIL )
+	{
+		log_error("create ref fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
+		free(rlr);
+	}
+	else
+	{
+		rlr->next = rl_received;
+		rl_received = rlr;
 	}
 	lua_pop(lua, -1);
     return 1;
+}
+
+static int lua_serialport_remove_received_callback(lua_State *lua)
+{
+	ref_list_received *rlr;
+	if (rl_received)
+	{
+		rlr = rl_received->next;
+		free(rl_received);
+		rl_received = rlr;
+	}
+	return 1;
 }
 
 static int lua_serialport_set_pinchange_callback(lua_State *lua)
@@ -187,8 +214,8 @@ int error(char *info)
 }
 int received()
 {
-	log_info("enter received in luawrapper %d %d %d", ref_received, ref_error, ref_pin);
-	lua_rawgeti(_lua, LUA_REGISTRYINDEX, ref_received);
+	if (rl_received)
+		lua_rawgeti(_lua, LUA_REGISTRYINDEX, rl_received->func_ref);
 	if (lua_isfunction(_lua, -1))
 		if (lua_pcall(_lua, 0, 1, 0) != LUA_OK)
 			log_error("callback fail: %s", lua_tostring(_lua, -1));
@@ -421,6 +448,7 @@ static const luaL_Reg logger[] = {
 	{"serialport_read", lua_serialport_read},
 	{"serialport_write", lua_serialport_write},
     {"serialport_set_received_callback", lua_serialport_set_received_callback},
+	{"serialport_remove_received_callback", lua_serialport_remove_received_callback},
     {"serialport_set_pinchange_callback", lua_serialport_set_pinchange_callback},
     {"serialport_set_error_callback", lua_serialport_set_error_callback},
 	{"ParseDatagram", lua_ParseDatagram},

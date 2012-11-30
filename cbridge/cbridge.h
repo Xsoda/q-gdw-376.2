@@ -1,6 +1,6 @@
 /* -*- encoding: utf-8-unix; -*- */
 /* File-name:    <cbridge.h> */
-/* Author:       <小苏打> */
+/* Author:       <С�մ�> */
 /* Create:       <Thu Oct 25 16:39:49 2012> */
 /* Time-stamp:   <Thursday October 25, 16:43:28 2012> */
 /* Mail:         <Xsoda@Live.com> */

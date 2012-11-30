@@ -22,11 +22,12 @@ function OpenSerial(arg1, arg2)
 	local a = 0
     serialport.set_error_hook(error_hook)
     serialport.set_pinchange_hook(pinchange_hook)
-    serialport.set_received_hook(received_hook)
+    serialport.received_hook.add(received_hook)
     return serialport.open(arg1, arg2)
 end
 
 function CloseSerial(arg1, arg2)
+	serialport.received_hook.remove();
     return serialport.close()
 end
 

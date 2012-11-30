@@ -31,10 +31,6 @@
 extern "C" {
 #endif
 
-#if defined _DEBUG
-#include "../logger/logger.h"
-#pragma comment(lib, "../Debug/logger.lib")
-#endif
 /****************************************************************************/
 // Public Messages
 #define SPM_DISPATCHNOTIFICATIONS  0x01

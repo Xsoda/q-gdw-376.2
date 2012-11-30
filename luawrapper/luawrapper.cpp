@@ -1,4 +1,4 @@
-// -*- encoding: utf-8-unix; -*-
+﻿// -*- encoding: utf-8-unix; -*-
 // File-name:    <luawrapper.cpp>
 // Author:       <小苏打>
 // Create:       <Thu Oct 25 16:40:31 2012>
@@ -6,7 +6,7 @@
 
 #include "luawrapper.h"
 
-static int ref_received, ref_error, ref_pin;
+static int ref_received, ref_error, ref_pin; // 链表存储管理
 static lua_State *_lua;
 static unsigned char spbuf[1024];
 static unsigned char spWrite[1024];
@@ -239,13 +239,60 @@ static int lua_ParseDatagram(lua_State * lua)
 	if (len)
 	{
 		dg = ParseDatagram(data, len);
+		if (!dg)
+		{
+			lua_pushnil(lua);
+			return 1;
+		}
 
 		lua_newtable(lua);
+
+		idx = 0;
+		// 构建一个报文错误表，如报文没有错误则为nil
+		lua_pushstring(lua, "error");
+		if (~dg->packet_status & PACKET_VALID)
+		{
+			// 报文有错误，只显示错误
+			lua_newtable(lua);
+			if (~dg->packet_status & PACKET_VALID_START)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文起始字节无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_LEN)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文长度无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_CHECKSUM)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文校验和无效");
+				lua_rawset(lua, -3);
+			}
+			if (~dg->packet_status & PACKET_VALID_END)
+			{
+				lua_pushinteger(lua, ++idx);
+				lua_pushstring(lua, "报文终止字节无效");
+				lua_rawset(lua, -3);
+			}
+		}
+		else
+		{
+			lua_pushnil(lua); //没错误，将error table set nil
+		}
+		lua_rawset(lua, -3);
+		if (idx)
+			return 1; // 报文有误，下面的不用解析了
+
 		lua_pushstring(lua, "Len");
 		lua_pushinteger(lua, dg->len);
 		lua_rawset(lua, -3);
 
 		lua_pushstring(lua, "Dir");
+		log_info("--");
 		lua_pushinteger(lua, dg->prefix->control.DIR);
 		lua_rawset(lua, -3);
 
@@ -256,15 +303,31 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_pushstring(lua, "CommModuleId");
 		lua_pushinteger(lua, dg->prefix->info.info_down.commModuleID);
 		lua_rawset(lua, -3);
-				
+
+		lua_pushstring(lua, "CommMode");
+		lua_pushinteger(lua, dg->prefix->control.commMode);
+		lua_rawset(lua, -3);
+
 		lua_pushstring(lua, "RelayLevel");
 		lua_pushinteger(lua, dg->prefix->info.info_down.relayLevel);
 		lua_rawset(lua, -3);
-				
+		
 		lua_pushstring(lua, "ChannelId");
 		lua_pushinteger(lua, dg->prefix->info.info_down.channelID);
 		lua_rawset(lua, -3);
-				
+
+
+		if (dg->prefix->control.DIR)
+		{
+			lua_pushstring(lua, "MeterChannelFeature");
+			lua_pushinteger(lua, dg->prefix->info.info_up.meterChannelFeature);
+			lua_rawset(lua, -3);
+
+			lua_pushstring(lua, "PhaseLineMark");
+			lua_pushinteger(lua, dg->prefix->info.info_up.phaseLineMark);
+			lua_rawset(lua, -3);
+		}
+
 		lua_pushstring(lua, "Afn");
 		lua_pushinteger(lua, dg->infix->AFN);
 		lua_rawset(lua, -3);
@@ -278,13 +341,18 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_rawset(lua, -3);
 
 		lua_pushstring(lua, "Data");
-		lua_newtable(lua);
-		for (int i = 1; i <= dg->userDataLen; i++)
+		if (dg->userDataLen > 0)
 		{
-			lua_pushinteger(lua, i);
-			lua_pushinteger(lua, dg->userData[i - 1]);
-			lua_rawset(lua, -3);
+			lua_newtable(lua);
+			for (int i = 1; i <= dg->userDataLen; i++)
+			{
+				lua_pushinteger(lua, i);
+				lua_pushinteger(lua, dg->userData[i - 1]);
+				lua_rawset(lua, -3);
+			}
 		}
+		else
+			lua_pushnil(lua);
 		lua_rawset(lua, -3);
 
 		if (dg->prefix->info.info_down.commModuleID)

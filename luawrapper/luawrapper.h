@@ -1,4 +1,4 @@
-/* -*- encoding: utf-8-unix; -*- */
+﻿/* -*- encoding: utf-8-unix; -*- */
 /* File-name:    <luawrapper.h> */
 /* Author:       <小苏打> */
 /* Create:       <Thu Oct 25 16:40:25 2012> */

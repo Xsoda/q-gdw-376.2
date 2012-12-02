@@ -48,6 +48,38 @@ static int lua_log_warn(lua_State *lua)
 
 #pragma endregion logger module wrapper
 
+#pragma region help function
+/*
+ * push the byte array to lua stack, and it key start from 1.
+ */
+int ByteArray2LuaTable(lua_State *lua, __u8 *data, __u32 len)
+{
+	lua_newtable(lua);
+	for (int i = 1; i <= len; i++)
+	{
+		lua_pushinteger(lua, i);
+		lua_pushinteger(lua, data[i - 1]);
+		lua_rawset(lua, -3);
+	}
+	return 1;
+}
+/*
+ * get byte array in current lua stack.
+ */
+int LuaTable2ByteArray(lua_State *lua, __u8 *data)
+{
+	int len = 0, idx;
+	idx = lua_gettop(lua);
+	lua_pushnil(lua);
+	while (lua_next(lua, idx))
+	{
+		data[len++] = lua_tointeger(lua, -1);
+		lua_pop(lua, 1);
+	}
+	return len;
+}
+#pragma endregion help function
+
 #pragma region serial port module wrapper
 static int baud[] = {300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 33600, 38400, 57600, 115200};
 static int lua_serialport_open(lua_State *lua)
@@ -256,13 +288,7 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_pushnil(lua);
 		return 0;
 	}
-	idx = lua_gettop(lua);
-	lua_pushnil(lua);
-	while (lua_next(lua, idx))
-	{
-		data[len++] = lua_tointeger(lua, -1);
-		lua_pop(lua, 1);
-	}
+	len = LuaTable2ByteArray(lua, data);
 	if (len)
 	{
 		dg = ParseDatagram(data, len);
@@ -310,6 +336,7 @@ static int lua_ParseDatagram(lua_State * lua)
 		{
 			lua_pushnil(lua); //没错误，将error table set nil
 		}
+		free(data);
 		lua_rawset(lua, -3);
 		if (idx)
 			return 1; // 报文有误，下面的不用解析了
@@ -369,15 +396,7 @@ static int lua_ParseDatagram(lua_State * lua)
 
 		lua_pushstring(lua, "Data");
 		if (dg->userDataLen > 0)
-		{
-			lua_newtable(lua);
-			for (int i = 1; i <= dg->userDataLen; i++)
-			{
-				lua_pushinteger(lua, i);
-				lua_pushinteger(lua, dg->userData[i - 1]);
-				lua_rawset(lua, -3);
-			}
-		}
+			ByteArray2LuaTable(lua, dg->userData, dg->userDataLen);
 		else
 			lua_pushnil(lua);
 		lua_rawset(lua, -3);
@@ -387,25 +406,13 @@ static int lua_ParseDatagram(lua_State * lua)
 			if (dg->packet_addr.sourceAddr)
 			{
 				lua_pushstring(lua, "SourceAddr");
-				lua_newtable(lua);
-				for (int i = 1; i <= 6; i++)
-				{
-					lua_pushinteger(lua, i);
-					lua_pushinteger(lua, dg->packet_addr.sourceAddr[i]);
-					lua_rawset(lua, -3);
-				}
+				ByteArray2LuaTable(lua, dg->packet_addr.sourceAddr, 6);
 				lua_rawset(lua, -3);
 			}
 			if (dg->packet_addr.destinationAddr)
 			{
 				lua_pushstring(lua, "SourceAddr");
-				lua_newtable(lua);
-				for (int i = 1; i <= 6; i++)
-				{
-					lua_pushinteger(lua, i);
-					lua_pushinteger(lua, dg->packet_addr.destinationAddr[i]);
-					lua_rawset(lua, -3);
-				}
+				ByteArray2LuaTable(lua, dg->packet_addr.destinationAddr, 6);
 				lua_rawset(lua, -3);
 			}
 			if (dg->packet_addr.relayAddr && dg->prefix->info.info_down.relayLevel)
@@ -415,13 +422,7 @@ static int lua_ParseDatagram(lua_State * lua)
 				for (int i = 1; i <= dg->prefix->info.info_down.relayLevel; i++)
 				{
 					lua_pushinteger(lua, i);
-					lua_newtable(lua);
-					for (int j = 1; j <= 6; j++)
-					{
-						lua_pushinteger(lua, j);
-						lua_pushinteger(lua, dg->packet_addr.relayAddr[(i - 1) * 6 + (j - 1)]);
-						lua_rawset(lua, -3);
-					}
+					ByteArray2LuaTable(lua, &dg->packet_addr.relayAddr[(i - 1) * 6], 6);
 					lua_rawset(lua, -3);
 				}
 				lua_rawset(lua, -3);
@@ -431,6 +432,26 @@ static int lua_ParseDatagram(lua_State * lua)
     return 1;
 }
 
+static int lua_CorrectDatagram(lua_State *lua)
+{
+	__u8 *data;
+	__u16 len = 0;
+	if ((data = (__u8 *)malloc(sizeof __u8 * 1024)) == NULL)
+	{
+		lua_pushnil(lua);
+		return 0;
+	}
+	len = LuaTable2ByteArray(lua, data);
+	for (int i = 0; i < len; i++)
+		log_info("0x%02X", data[i]);
+	len = (__u16)CorrectDatagram(data, len);
+	log_info("------------------------------------");
+	for (int i = 0; i < len; i++)
+		log_info("0x%02X", data[i]);
+	ByteArray2LuaTable(lua, data, (__u32)len);
+	free(data);
+	return 1;
+}
 static int lua_ParsePacket(lua_State *lua)
 {
 	return 1;
@@ -453,6 +474,7 @@ static const luaL_Reg logger[] = {
     {"serialport_set_error_callback", lua_serialport_set_error_callback},
 	{"ParseDatagram", lua_ParseDatagram},
 	{"ParsePacket", lua_ParsePacket},
+	{"CorrectDatagram", lua_CorrectDatagram},
     {0, 0}
 };
 

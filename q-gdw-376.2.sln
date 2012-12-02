@@ -29,10 +29,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68650A8E-3D17-4532-9864-61A888C58368}"
 	ProjectSection(SolutionItems) = preProject
 		script\controller.lua = script\controller.lua
+		script\Datagram.lua = script\Datagram.lua
 		script\logger.lua = script\logger.lua
 		script\odbc.lua = script\odbc.lua
-		script\packet.lua = script\packet.lua
-		script\parse.lua = script\parse.lua
 		script\serialport.lua = script\serialport.lua
 	EndProjectSection
 EndProject

@@ -31,6 +31,7 @@
 extern "C" {
 #endif
 
+#define SP_ONLY_ONE_INSTANCE 1
 /****************************************************************************/
 // Public Messages
 #define SPM_DISPATCHNOTIFICATIONS  0x01
@@ -123,38 +124,71 @@ typedef struct _tagINSTANCEDATA {
 
 /****************************************************************************/
 // Prototypes
+#if SP_ONLY_ONE_INSTANCE
 LRESULT SerialPort_Proc(UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL InitializeSerialPort();
 BOOL ReleaseSerialPort();
 int SetSerialPortCallback(int (*error)(char*),
 						  int (*received)(),
 						  int (*pin_change)(int));
+#else
+LRESULT SerialPort_Proc(LPINSTANCEDATA g_lpInst, UINT msg, WPARAM wParam, LPARAM lParam);
+LPINSTANCEDATA InitializeSerialPort();
+BOOL ReleaseSerialPort();
+int SetSerialPortCallback(LPINSTANCEDATA g_lpInst,
+						  int (*error)(char*),
+						  int (*received)(),
+						  int (*pin_change)(int));
+#endif
 /****************************************************************************/
 // Macroes
-
-#define SerialPort_GetPortNames(lpCount)  (LPTSTR*)SerialPort_Proc(SPM_GETPORTNAMES,(WPARAM)(lpCount),(LPARAM)0L)
-#define SerialPort_SetConfigurations(lpConfig)  (BOOL)SerialPort_Proc(SPM_SETCONFIG,(WPARAM)0,(LPARAM)(const LPCONFIG)(lpConfig))
-#define SerialPort_GetConfigurations(lpConfig)  (BOOL)SerialPort_Proc(SPM_GETCONFIG,(WPARAM)0,(LPARAM)(LPCONFIG)(lpConfig))
-#define SerialPort_SetReadTimeout(dwTimeout)  (BOOL)SerialPort_Proc(SPM_SETREADTIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
-#define SerialPort_GetReadTimeout()  (DWORD)SerialPort_Proc(SPM_GETREADTIMEOUT,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_SetWriteTimeout(dwTimeout)  (BOOL)SerialPort_Proc(SPM_SETWRITETIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
-#define SerialPort_GetWriteTimeout()  (DWORD)SerialPort_Proc(SPM_GETWRITETIMEOUT,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_GetCTS()  (BOOL)SerialPort_Proc(SPM_GETCTS,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_GetDSR()  (BOOL)SerialPort_Proc(SPM_GETDSR,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_BytesToRead()  (DWORD)SerialPort_Proc(SPM_BYTESTOREAD,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_BytesToWrite()  (DWORD)SerialPort_Proc(SPM_BYTESTOWRITE,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_WriteBytes(lpData, dwSize)  (BOOL)SerialPort_Proc(SPM_WRITEBYTES,(WPARAM)(dwSize),(LPARAM)(lpData))
-#define SerialPort_ReadBytes(lpBuf, dwSize)  (DWORD)SerialPort_Proc(SPM_READBYTES,(WPARAM)(dwSize),(LPARAM)(lpBuf))
-#define SerialPort_QueryBytes(lpData, lpdwSize) (DWORD)SerialPort_Proc( SPM_QUERYBYTES,(WPARAM)(lpdwSize),(LPARAM)(lpBuf))
-#define SerialPort_WriteString(lpsztext)  (BOOL)SerialPort_Proc(SPM_WRITESTRING,(WPARAM)0,(LPARAM)(lpsztext))
-#define SerialPort_ReadString(lpszBuf, dwSize)  (DWORD)SerialPort_Proc(SPM_READSTRING,(WPARAM)(dwSize),(LPARAM)(lpszBuf))
-#define SerialPort_Close()  (BOOL)SerialPort_Proc(SPM_CLOSE,(WPARAM)0,(LPARAM)0L)
-#define SerialPort_Open(lpConfig)  (BOOL)SerialPort_Proc(SPM_OPEN,(WPARAM)0,(LPARAM)(lpConfig))
-#define SerialPort_FlushReadBuf()  (BOOL)SerialPort_Proc(SPM_FLUSH,(WPARAM)PURGE_RXCLEAR,(LPARAM)0L)
-#define SerialPort_FlushWriteBuf()  (BOOL)SerialPort_Proc(SPM_FLUSH,(WPARAM)PURGE_TXCLEAR,(LPARAM)0L)
-#define SerialPort_SetReceiveByteThreshold(dwNumBytes)  (BOOL)SerialPort_Proc(SPM_SETRXTHRESHOLD,(WPARAM)(dwNumBytes),(LPARAM)0L)
-#define SerialPort_GetReceiveByteThreshold()  (DWORD)SerialPort_Proc(SPM_GETRXTHRESHOLD,(WPARAM)0,(LPARAM)0L)
-
+#if SP_ONLY_ONE_INSTANCE
+#define SerialPort_GetPortNames(lpCount)                       (LPTSTR*)SerialPort_Proc(SPM_GETPORTNAMES,(WPARAM)(lpCount),(LPARAM)0L)
+#define SerialPort_SetConfigurations(lpConfig)                    (BOOL)SerialPort_Proc(SPM_SETCONFIG,(WPARAM)0,(LPARAM)(const LPCONFIG)(lpConfig))
+#define SerialPort_GetConfigurations(lpConfig)                    (BOOL)SerialPort_Proc(SPM_GETCONFIG,(WPARAM)0,(LPARAM)(LPCONFIG)(lpConfig))
+#define SerialPort_SetReadTimeout(dwTimeout)                      (BOOL)SerialPort_Proc(SPM_SETREADTIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
+#define SerialPort_GetReadTimeout()                              (DWORD)SerialPort_Proc(SPM_GETREADTIMEOUT,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_SetWriteTimeout(dwTimeout)                     (BOOL)SerialPort_Proc(SPM_SETWRITETIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
+#define SerialPort_GetWriteTimeout()                             (DWORD)SerialPort_Proc(SPM_GETWRITETIMEOUT,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_GetCTS()                                       (BOOL)SerialPort_Proc(SPM_GETCTS,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_GetDSR()                                       (BOOL)SerialPort_Proc(SPM_GETDSR,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_BytesToRead()                                 (DWORD)SerialPort_Proc(SPM_BYTESTOREAD,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_BytesToWrite()                                (DWORD)SerialPort_Proc(SPM_BYTESTOWRITE,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_WriteBytes(lpData, dwSize)                     (BOOL)SerialPort_Proc(SPM_WRITEBYTES,(WPARAM)(dwSize),(LPARAM)(lpData))
+#define SerialPort_ReadBytes(lpBuf, dwSize)                      (DWORD)SerialPort_Proc(SPM_READBYTES,(WPARAM)(dwSize),(LPARAM)(lpBuf))
+#define SerialPort_QueryBytes(lpData, lpdwSize)                  (DWORD)SerialPort_Proc(SPM_QUERYBYTES,(WPARAM)(lpdwSize),(LPARAM)(lpBuf))
+#define SerialPort_WriteString(lpsztext)                          (BOOL)SerialPort_Proc(SPM_WRITESTRING,(WPARAM)0,(LPARAM)(lpsztext))
+#define SerialPort_ReadString(lpszBuf, dwSize)                   (DWORD)SerialPort_Proc(SPM_READSTRING,(WPARAM)(dwSize),(LPARAM)(lpszBuf))
+#define SerialPort_Close()                                        (BOOL)SerialPort_Proc(SPM_CLOSE,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_Open(lpConfig)                                 (BOOL)SerialPort_Proc(SPM_OPEN,(WPARAM)0,(LPARAM)(lpConfig))
+#define SerialPort_FlushReadBuf()                                 (BOOL)SerialPort_Proc(SPM_FLUSH,(WPARAM)PURGE_RXCLEAR,(LPARAM)0L)
+#define SerialPort_FlushWriteBuf()                                (BOOL)SerialPort_Proc(SPM_FLUSH,(WPARAM)PURGE_TXCLEAR,(LPARAM)0L)
+#define SerialPort_SetReceiveByteThreshold(dwNumBytes)            (BOOL)SerialPort_Proc(SPM_SETRXTHRESHOLD,(WPARAM)(dwNumBytes),(LPARAM)0L)
+#define SerialPort_GetReceiveByteThreshold()                     (DWORD)SerialPort_Proc(SPM_GETRXTHRESHOLD,(WPARAM)0,(LPARAM)0L)
+#else
+#define SerialPort_GetPortNames(g_lpInst, lpCount)             (LPTSTR*)SerialPort_Proc(g_lpInst, SPM_GETPORTNAMES,(WPARAM)(lpCount),(LPARAM)0L)
+#define SerialPort_SetConfigurations(g_lpInst, lpConfig)          (BOOL)SerialPort_Proc(g_lpInst, SPM_SETCONFIG,(WPARAM)0,(LPARAM)(const LPCONFIG)(lpConfig))
+#define SerialPort_GetConfigurations(g_lpInst, lpConfig)          (BOOL)SerialPort_Proc(g_lpInst, SPM_GETCONFIG,(WPARAM)0,(LPARAM)(LPCONFIG)(lpConfig))
+#define SerialPort_SetReadTimeout(g_lpInst, dwTimeout)            (BOOL)SerialPort_Proc(g_lpInst, SPM_SETREADTIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
+#define SerialPort_GetReadTimeout(g_lpInst)                      (DWORD)SerialPort_Proc(g_lpInst, SPM_GETREADTIMEOUT,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_SetWriteTimeout(g_lpInst, dwTimeout)           (BOOL)SerialPort_Proc(g_lpInst, SPM_SETWRITETIMEOUT,(WPARAM)(dwTimeout),(LPARAM)0L)
+#define SerialPort_GetWriteTimeout(g_lpInst)                     (DWORD)SerialPort_Proc(g_lpInst, SPM_GETWRITETIMEOUT,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_GetCTS(g_lpInst)                               (BOOL)SerialPort_Proc(g_lpInst, SPM_GETCTS,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_GetDSR(g_lpInst)                               (BOOL)SerialPort_Proc(g_lpInst, SPM_GETDSR,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_BytesToRead(g_lpInst)                         (DWORD)SerialPort_Proc(g_lpInst, SPM_BYTESTOREAD,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_BytesToWrite(g_lpInst)                        (DWORD)SerialPort_Proc(g_lpInst, SPM_BYTESTOWRITE,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_WriteBytes(g_lpInst, lpData, dwSize)           (BOOL)SerialPort_Proc(g_lpInst, SPM_WRITEBYTES,(WPARAM)(dwSize),(LPARAM)(lpData))
+#define SerialPort_ReadBytes(g_lpInst, lpBuf, dwSize)            (DWORD)SerialPort_Proc(g_lpInst, SPM_READBYTES,(WPARAM)(dwSize),(LPARAM)(lpBuf))
+#define SerialPort_QueryBytes(g_lpInst, lpData, lpdwSize)        (DWORD)SerialPort_Proc(g_lpInst, SPM_QUERYBYTES,(WPARAM)(lpdwSize),(LPARAM)(lpBuf))
+#define SerialPort_WriteString(g_lpInst, lpsztext)                (BOOL)SerialPort_Proc(g_lpInst, SPM_WRITESTRING,(WPARAM)0,(LPARAM)(lpsztext))
+#define SerialPort_ReadString(g_lpInst, lpszBuf, dwSize)         (DWORD)SerialPort_Proc(g_lpInst, SPM_READSTRING,(WPARAM)(dwSize),(LPARAM)(lpszBuf))
+#define SerialPort_Close(g_lpInst)                                (BOOL)SerialPort_Proc(g_lpInst, SPM_CLOSE,(WPARAM)0,(LPARAM)0L)
+#define SerialPort_Open(g_lpInst, lpConfig)                       (BOOL)SerialPort_Proc(g_lpInst, SPM_OPEN,(WPARAM)0,(LPARAM)(lpConfig))
+#define SerialPort_FlushReadBuf(g_lpInst)                         (BOOL)SerialPort_Proc(g_lpInst, SPM_FLUSH,(WPARAM)PURGE_RXCLEAR,(LPARAM)0L)
+#define SerialPort_FlushWriteBuf(g_lpInst)                        (BOOL)SerialPort_Proc(g_lpInst, SPM_FLUSH,(WPARAM)PURGE_TXCLEAR,(LPARAM)0L)
+#define SerialPort_SetReceiveByteThreshold(g_lpInst, dwNumBytes)  (BOOL)SerialPort_Proc(g_lpInst, SPM_SETRXTHRESHOLD,(WPARAM)(dwNumBytes),(LPARAM)0L)
+#define SerialPort_GetReceiveByteThreshold(g_lpInst)             (DWORD)SerialPort_Proc(g_lpInst, SPM_GETRXTHRESHOLD,(WPARAM)0,(LPARAM)0L)
+#endif
 #if defined __cplusplus
 }
 #endif

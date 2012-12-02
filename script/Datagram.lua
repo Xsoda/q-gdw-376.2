@@ -32,6 +32,10 @@ Datagram = {
 		local wrapper = require("luawrapper")
 		return wrapper.ParseDatagram(t)
 	end,
+	correct = function (t)
+		local wrapper = require("luawrapper")
+		return wrapper.CorrectDatagram(t)
+	end,
 	show = function (r)
 		local CM_STR = {
 			[1] = "【集中式路由载波通讯】",

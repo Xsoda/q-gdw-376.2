@@ -144,3 +144,27 @@ __u8 GetFn(__u8  dt1, __u8 dt2)
     while( !(dt1 & (i << j++)) && (j <= 8));
     return dt1 ? dt2 * 8 + j : 0;
 }
+
+/*
+ * Correct the incorrect datagram, it just check checksum and the end,
+ * if end byte not 0x16, this function will add the checksum and the end byte,
+ * else modify the checksum.
+ */
+int CorrectDatagram(__u8 *packet, __u16 len)
+{
+	__u8 checksum = 0;
+	if (packet[len - 1] == 0x16)
+	{
+		for (int i = 3; i < len - 2; i++)
+			checksum += packet[i];
+		packet[len - 2] = checksum;
+	}
+	else
+	{
+		for (int i = 3; i <= len - 1; i++)
+			checksum += packet[i];
+		packet[len++] = checksum;
+		packet[len++] = 0x16;
+	}
+	return len;
+}

@@ -171,7 +171,7 @@ typedef struct _err {
 Datagram * ParseDatagram(__u8 *packet, __u16 len);
 Packet *ParsePacket(__u8 *data, __u16 len);
 __u8 GetFn(__u8  dt1, __u8 dt2);
-
+int CorrectDatagram(__u8 *packet, __u16 len);
 #if defined __cplusplus
 }
 #endif

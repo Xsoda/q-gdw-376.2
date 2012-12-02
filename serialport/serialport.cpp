@@ -8,10 +8,10 @@
 
 #define NELEMS(a) (sizeof(a) / sizeof((a)[0]))
 
-
+#if SP_ONLY_ONE_INSTANCE
 // Globals
 static LPINSTANCEDATA g_lpInst;
-
+#endif
 /*
  *     FUNCTION: SetStringBuffer
  *

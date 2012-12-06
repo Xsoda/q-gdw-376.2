@@ -1,0 +1,109 @@
+﻿<Fluent:RibbonWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WpfUI.MainWindow"
+        Title="MainWindow" Height="700" Width="1000" Icon="Images/Fluent.ico">
+
+    <DockPanel LastChildFill="True">
+        <Fluent:Ribbon DockPanel.Dock="Top">
+            <!--Contextual Tab Groups-->
+            <Fluent:Ribbon.ContextualGroups>
+                <Fluent:RibbonContextualTabGroup Header="软件参数设置" Visibility="Visible" x:Name="ArgSetting" Background="Green" BorderBrush="Green" />
+                <Fluent:RibbonContextualTabGroup Header="模块数据设置" Visibility="Visible" x:Name="ModuleSetting" Background="Plum" BorderBrush="Pink" />
+            </Fluent:Ribbon.ContextualGroups>
+
+            <!--Quick Access Toolbar Items-->
+            <Fluent:Ribbon.QuickAccessItems>
+                <!--Use Content or Target Property to set QAT item-->
+               <!-- <Fluent:QuickAccessMenuItem IsChecked="true">
+                </Fluent:QuickAccessMenuItem>-->
+                <!--You Can Just Bind with Any Control-->
+                <Fluent:QuickAccessMenuItem Header="重置计数" Icon="Images\Pink.png" />
+                <Fluent:QuickAccessMenuItem Header="清空日志" Icon="Images\Red.png" />
+            </Fluent:Ribbon.QuickAccessItems>
+            <!--Contextual Tabs-->
+            <Fluent:RibbonTabItem Header="串口参数" Group="{Binding ElementName=ArgSetting}">
+                <Fluent:RibbonGroupBox Header="Serial Port Argument #1">
+                    <Fluent:ComboBox Name="CB_SERIALPORT" SizeDefinition="Large" Header="串口:" Width="150"/>
+                    <Fluent:ComboBox Name="CB_BAUDRATE" SizeDefinition="Large" Header="波特率:" Width="150"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Serial Port Argument #2">
+                    <Fluent:ComboBox Name="CB_CHECKBIT" SizeDefinition="Large" Header="校验位:" Width="150"/>
+                    <Fluent:ComboBox Name="CB_FLOWCONTROL" SizeDefinition="Large" Header="流程控制:" Width="150"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Serial Port Operation">
+                    <Fluent:Button Name="BTN_OPER_SERIAL_PORT" SizeDefinition="Large" Header="打开串口" LargeIcon="Images\BlueLarge.png" Icon="Images\Blue.png" />
+                    <Fluent:Button Name="BTN_CLOSE_SERIAL_PORT" SizeDefinition="Large"  Header="关闭串口" LargeIcon="Images\PinkLarge.png" Icon="Images\Pink.png"/>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            <Fluent:RibbonTabItem Header="抄读数据设置" Group="{Binding ElementName=ArgSetting}">
+                <Fluent:RibbonGroupBox Header="Read Data Item">
+                    <Fluent:CheckBox Header="正向有功总电能" SizeDefinition="Large" />
+                    <Fluent:CheckBox Header="掉电次数" SizeDefinition="Large" />
+                    <Fluent:CheckBox Header="掉电时间" SizeDefinition="Large" />
+                    <Fluent:CheckBox Header="电压合格率" SizeDefinition="Large" />
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            
+            <Fluent:RibbonTabItem Header="数据设置" Group="{Binding ElementName=ModuleSetting}">
+                <Fluent:RibbonGroupBox Header="载波主节点地址设置">
+                    <Fluent:TextBox Header="载波主节点地址" SizeDefinition="Large" MinWidth="200"/>
+                    <Fluent:Button Header="获取地址" SizeDefinition="Middle" Icon="Images\Orange.png" LargeIcon="Images\OrangeLarge.png"/>
+                    <Fluent:Button Header="设置地址" SizeDefinition="Middle" Icon="Images\Yellow.png" LargeIcon="Images\YellowLarge.png"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="台区号设置">
+                    <Fluent:TextBox Header="台区编号" SizeDefinition="Large" MinWidth="200"/>
+                    <Fluent:Button Header="获取台区编号" SizeDefinition="Middle" Icon="Images\Brown.png" LargeIcon="Images\BrownLarge.png"/>
+                    <Fluent:Button Header="设置台区编号" SizeDefinition="Middle" Icon="Images\Gray.png" LargeIcon="Images\GrayLarge.png"/>
+                </Fluent:RibbonGroupBox>          
+            </Fluent:RibbonTabItem>
+            
+            <Fluent:RibbonTabItem Header="路由功能">
+            <Fluent:RibbonGroupBox Header="路由查询">
+                    <Fluent:Button Header="载波从节点信息" SizeDefinition="Large" Icon="Images\Green.png" LargeIcon="Images\GreenLarge.png" />
+                    <Fluent:Button Header="载波从节点数量" SizeDefinition="Large" Icon="Images\Red.png" LargeIcon="Images\RedLarge.png"/>
+                </Fluent:RibbonGroupBox>
+            <Fluent:RibbonGroupBox Header="路由控制">
+                    <Fluent:Button Header="重启" SizeDefinition="Large" Icon="Images\Blue.png" LargeIcon="Images\BlueLarge.png" />
+                    <Fluent:Button Header="暂停" SizeDefinition="Large" Icon="Images\Gray.png" LargeIcon="Images\GrayLarge.png"/>
+                    <Fluent:Button Header="恢复" SizeDefinition="Large" Icon="Images\Orange.png" LargeIcon="Images\OrangeLarge.png" />
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            <!--Backstage Items-->
+            <Fluent:Ribbon.Menu>
+                <Fluent:Backstage Header="载波从节点管理">
+                    <Fluent:BackstageTabControl>
+                        <Fluent:Button Header="Close" />
+                        <Border VerticalAlignment="Top">
+                        <ListView Name="listView" MinWidth="280">
+                            <ListView.View>
+                                <GridView x:Name="gridView1">
+                                    <GridViewColumn Header="ContactID"></GridViewColumn>
+                                    <GridViewColumn Header="FirstName"></GridViewColumn>
+                                    <GridViewColumn Header="LastName"></GridViewColumn>
+                                    <GridViewColumn Header="EmailAddress"></GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        </Border>
+                    </Fluent:BackstageTabControl>
+                </Fluent:Backstage>
+            </Fluent:Ribbon.Menu>          
+            
+        </Fluent:Ribbon>
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="* The Result of Datagram Parse and The Content of Received Datagram" Foreground="Gray" Grid.ColumnSpan="2" />
+            <Border Margin="5,10, 5, 10" Padding="10" CornerRadius="5"  VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="DarkGray" BorderThickness="1" Grid.Column="0" Height="489">
+                <RichTextBox MinHeight="10"/>
+            </Border>
+            <Border Margin="5,10, 5,10" Padding="10" CornerRadius="5"  VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="DarkGray" BorderThickness="1" Grid.Column="1" Height="489">
+                <RichTextBox MinHeight="10"/>
+            </Border>            
+        </Grid>
+    </DockPanel>    
+</Fluent:RibbonWindow>

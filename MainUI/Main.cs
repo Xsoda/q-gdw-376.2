@@ -31,23 +31,24 @@ namespace MainUI
                 }
                 CB_CHOSE_SERIAL_PORT.SelectedItem = 0;
             }
-            op.Height = tabPage1.Height;
-            op.Width = tabPage1.Width - 210;            
+            this.Width = 220;
+            op.Height = this.Height;
+            op.Width = 400;
             op.Show();
         }
 
         protected override void OnMove(EventArgs e)
         {
             base.OnMove(e);
-            op.Left = this.Left + 210;
-            op.Top = this.Top + this.Height - tabPage1.Height - STATUS.Height - menuStrip1.Height + 8;
+            op.Left = this.Right;
+            op.Top = this.Top;
         }
 
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            op.Height = tabPage1.Height;
-            op.Width = tabPage1.Width - 200;
+            op.Height = this.Height;
+            op.Width = 400;
             this.OnMove(e);
         }
 

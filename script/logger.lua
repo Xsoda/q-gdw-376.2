@@ -11,18 +11,18 @@ Modules:
 logger = {
     log_error = function (str)
         local wrapper = require("luawrapper")
-        wrapper.log_error("<LUA>"..str)
+		if str then wrapper.log_error("<LUA>"..str) end
     end,
     log_info = function (str)
         local wrapper = require("luawrapper")
-        wrapper.log_info("<LUA>"..str)
+        if str then wrapper.log_info("<LUA>"..str) end
     end,
     log_debug = function (str)
         local wrapper = require("luawrapper")
-        wrapper.log_debug("<LUA>"..str)
+        if str then wrapper.log_debug("<LUA>"..str) end
     end,
     log_warn = function (str)
         local wrapper = require("luawrapper")
-        wrapper.log_warn("<LUA>"..str)
+        if str then wrapper.log_warn("<LUA>"..str) end
     end
 }

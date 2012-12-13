@@ -18,6 +18,51 @@ static unsigned char spbuf[1024];
 static unsigned char spWrite[1024];
 // register logger function
 #pragma region logger module wrapper
+#ifndef LOG_ONCE
+static int lua_log_create(lua_State *lua)
+{
+	const char *path = luaL_checkstring(lua, -1);
+	lua_pushinteger(lua, Logger_create(path));
+	return 1;
+}
+static int lua_log_release(lua_State *lua)
+{
+	Logger l = luaL_checkinteger(lua, -1);
+	Logger_release(l);
+	return 0;
+}
+static int lua_log_info(lua_State *lua)
+{
+    const char *content = luaL_checkstring(lua, -1);
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+    log_info(l, content);
+    return 0;
+}
+
+static int lua_log_error(lua_State *lua)
+{
+    const char *content = luaL_checkstring(lua, -1);
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+    log_error(l, content);
+    return 0;
+}
+
+static int lua_log_debug(lua_State *lua)
+{
+    const char *content = luaL_checkstring(lua, -1);
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+    log_debug(l, content);
+    return 0;
+}
+
+static int lua_log_warn(lua_State *lua)
+{
+    const char *content = luaL_checkstring(lua, -1);
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+    log_warn(l, content);
+    return 0;
+}
+#else
 static int lua_log_info(lua_State *lua)
 {
     const char *content = luaL_checkstring(lua, -1);
@@ -45,7 +90,7 @@ static int lua_log_warn(lua_State *lua)
     log_warn(content);
     return 0;
 }
-
+#endif
 #pragma endregion logger module wrapper
 
 #pragma region help function
@@ -460,6 +505,10 @@ static int lua_ParsePacket(lua_State *lua)
 
 static const luaL_Reg logger[] = {
     // logger.dll
+#ifndef LOG_ONCE
+	{"log_create", lua_log_create},
+	{"log_create", lua_log_release},
+#endif
     {"log_info", lua_log_info},
     {"log_error", lua_log_error},
     {"log_debuf", lua_log_debug},

@@ -7,7 +7,7 @@
 #include "logger.h"
 
 #ifndef LOG_ONCE
-Logger Logger_create()
+Logger Logger_create(const char *device_path)
 {
     Logger l;
 #else
@@ -20,6 +20,7 @@ void Logger_create()
     l->datetime_format = "%Y-%m-%d %H:%M:%S";
     l->level = LOG_DEBUG;
 #ifndef LOG_ONCE
+	l->device_path = strdup(device_path);
     return(l);
 #endif
 }
@@ -28,7 +29,11 @@ void log_add(Logger la, int level, const char *msg)
 {
     if (level < la->level) return;
     FILE *fp;
+#ifdef LOG_ONCE
     fopen_s(&fp, "log.txt", "a");
+#else
+	fopen_s(&fp, la->device_path, "a");
+#endif
     time_t meow = time(NULL);
 
     char buf[64];
@@ -91,7 +96,6 @@ void log_error(const char *fmt, ...)
 {
     va_list ap;
     char msg[LOG_MAX_MSG_LEN];
-
     va_start(ap, fmt);
     vsnprintf_s(msg, sizeof(msg), fmt, ap);
     log_add(l, LOG_ERROR, msg);
@@ -104,5 +108,8 @@ void Logger_release(Logger l)
 void Logger_release()
 #endif
 {
+#ifndef LOG_ONCE
+	free(l->device_path);
+#endif
     free(l);
 }

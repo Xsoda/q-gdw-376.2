@@ -10,7 +10,7 @@
 #include <time.h>
 #include <stdarg.h>
 #include <process.h>
-
+#include <string.h>
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
 
@@ -33,13 +33,15 @@ extern "C" {
 typedef struct LOGGER {
     int level;
     char *datetime_format;
-    //void *device;
+#ifndef LOG_ONCE
+    char *device_path;
+#endif
 } LOGGER;
 
 typedef LOGGER* Logger;
 
 #ifndef LOG_ONCE
-Logger Logger_create();
+Logger Logger_create(const char *device_path);
 void Logger_release(Logger l);
 void log_add(Logger l, int level, const char *msg);
 void log_debug(Logger l, const char *fmt, ...);

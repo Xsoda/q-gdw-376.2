@@ -1,37 +1,39 @@
 #ifndef _ODBC_H_
 #define _ODBC_H_
 
+#if defined __cplusplus
+extern "C" {
+#endif
+
 #include <Windows.h>
 #include <odbcinst.h>
 #include <odbcss.h>
 #include <sqlucode.h>
 #include <sql.h>
-#include "../logger/logger.h"
 
-#if _DEBUG
-#pragma comment(lib, "../Debug/logger.lib")
-#else
-#pragma comment(lib, "../Release/logger.lib")
-#endif
+#define _IN_
+#define _OUT_
+#define _IN_OUT_
+
 typedef struct connection {
   SQLHENV henv;
   SQLHDBC hdbc;
+  SQLHSTMT hstmt;
 } connection;
 
-typedef struct column_info {
+typedef struct binding {
   SQLSMALLINT size; // size to display
   WCHAR *wszbuffer; // display buffer
   SQLLEN indPtr; // size or null
   BOOL fChar; // character col?
-  struct column_info *next; // linked list
-} column_info;
+  struct binding *next; // linked list
+} binding;
 
 typedef struct statement {
-  connection *conn;
-  SQLHSTMT hstmt;
+  connection *conn;  
   SQLSMALLINT cols;
   SQLINTEGER rows;
-  column_info *ci;
+  binding *column_info;
 } statement;
 
 typedef enum {
@@ -40,24 +42,23 @@ typedef enum {
   VALUE_TIME,
 } VALUE;
 
-connection *create_connection(char *dsn);
-statement *create_statement(connection *conn);
-bool prepare_statement(statement *stmt, char *sql);
-bool set_value_type(statement *stmt, int index, VALUE type, void *value);
-bool execute(statement *stmt);
-bool reset_stmt(statement *stmt);
-void close_connection(connection *conn);
-void close_statement(statement *stmt);
-bool execut_direct(statement *stmt, char *sql);
-unsigned int get_update_count(statement *stmt);
-bool absolute(statement *stmt, unsigned int linum);
-bool after_last(statement *stmt); 
-bool befor_first(statement *stmt);
-bool next(statement *stmt);
-bool previous(statement *stmt);
-bool relative(statement *stmt, int offset);
-unsigned int get_column_count(statement *stmt);
-VALUE get_column_type(statement *stmt);
-unsigned int get_column_name(statement *stmt, char *cname, int len);
-void HandleDiagnosticRecord (SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode);
+int odbc_open(_IN_ SQLWCHAR *dsn, _OUT_ connection **conn);
+int odbc_prepare(_IN_ connection *conn, _IN_ SQLWCHAR *sql, _IN_ unsigned int len, _OUT_ statement **stmt);
+int odbc_exec(_IN_ connection *conn, _IN_ SQLWCHAR *sql);
+long odbc_row_count(_IN_ connection *conn);
+int odbc_column_count(_IN_ statement *stmt);
+SQLWCHAR * odbc_column_name(_IN_ statement *stmt, _IN_ unsigned int iCol);
+SQLWCHAR * odbc_column_text(_IN_ statement *stmt, _IN_ unsigned int iCol);
+double odbc_column_double(_IN_ statement *stmt, _IN_ unsigned int iCol);
+int odbc_column_int(_IN_ statement *stmt, _IN_ unsigned int iCol);
+int odbc_step(_IN_ statement *stmt);
+int odbc_finalize(_IN_OUT_ statement **stmt);
+int odbc_close(_IN_OUT_ connection **conn);
+
+static void HandleDiagnosticRecord (SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode);
+static void allocate_bindings(statement *stmt, binding **ci);
+#if defined __cplusplus
+}
+#endif
+
 #endif // _ODBC_H_

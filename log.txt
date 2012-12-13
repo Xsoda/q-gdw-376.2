@@ -1,0 +1,22 @@
+[4276]  INFO | 2012-12-13 10:26:08 : <LUA>报文长度: 21通讯方式: 1 【集中式路由载波通讯】中继级别: 0 【无中继】通讯模块标识: 0 【对集中器的通信模块操作】路由标识: 0 【通信模块带路由】信道标识: 0 【不分信道】应用功能码: 5 【控制命令】信息类标识: 1 【设置载波主节点地址】数据单元长度: 6数据单元内容: ab 90 78 56 34 12
+[4276]  INFO | 2012-12-13 10:26:08 : <LUA>table: 01130950
+[2640]  INFO | 2012-12-13 10:28:57 : <LUA>Test Logger Module
+[2316  INFO] 2012-12-13 10:44:07 : <LUA>Test Logger Module
+[2316  INFO] 2012-12-13 10:44:10 : <LUA>Dispatch COM1 328192
+[1076  INFO] 2012-12-13 10:44:34 : <LUA>Test Logger Module
+[5252  INFO] 2012-12-13 10:44:46 : <LUA>Test Logger Module
+[6076  INFO] 2012-12-13 10:45:21 : <LUA>Test Logger Module
+[1956  INFO] 2012-12-13 10:45:50 : <LUA>Test Logger Module
+[1956  INFO] 2012-12-13 10:45:54 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:40 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:44 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:46 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:48 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:49 : <LUA>Dispatch COM1 328192
+[1956  INFO] 2012-12-13 10:46:55 : <LUA>Dispatch COM1 328192
+[3620  INFO] 2012-12-13 10:50:19 : <LUA>Test Logger Module
+[3620  INFO] 2012-12-13 10:51:23 : <LUA>Test Logger Module
+[3620  INFO] 2012-12-13 10:51:27 : <LUA>Dispatch COM2 328192
+[3852  INFO] 2012-12-13 10:52:08 : <LUA>Test Logger Module
+[524  INFO] 2012-12-13 10:52:13 : <LUA>Test Logger Module
+[4172  INFO] 2012-12-13 10:53:23 : <LUA>Test Logger Module

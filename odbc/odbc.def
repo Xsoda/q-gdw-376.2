@@ -1,2 +1,14 @@
 LIBRARY odbc
 EXPORTS
+    odbc_open
+    odbc_prepare
+    odbc_exec
+    odbc_row_count
+    odbc_column_count
+    odbc_column_name
+    odbc_column_text
+    odbc_column_double
+    odbc_column_int
+    odbc_step
+    odbc_finalize
+    odbc_close

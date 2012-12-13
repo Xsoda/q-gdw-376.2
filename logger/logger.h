@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <stdarg.h>
 #include <process.h>
@@ -18,43 +19,29 @@
 extern "C" {
 #endif
 
-
-
-#define LOG_ONCE
-
 #define LOG_DEBUG 0
 #define LOG_INFO  1
 #define LOG_WARN  2
 #define LOG_ERROR 3
 
-#define LOG_LEVEL_CHARS "DIWEF"
+static char * LOG_LEVEL_CHARS[] = {"DEBUG", " INFO", " WARN", "ERROR", "FAULT"};
 #define LOG_MAX_MSG_LEN 1024
 
 typedef struct LOGGER {
     int level;
     char *datetime_format;
-    //void *device;
+    char *device_path;
 } LOGGER;
 
 typedef LOGGER* Logger;
 
-#ifndef LOG_ONCE
-Logger Logger_create();
+Logger Logger_create(const char *device_path);
 void Logger_release(Logger l);
 void log_add(Logger l, int level, const char *msg);
 void log_debug(Logger l, const char *fmt, ...);
 void log_info(Logger l, const char *fmt, ...);
 void log_warn(Logger l, const char *fmt, ...);
 void log_error(Logger l, const char *fmt, ...);
-#else
-void Logger_create();
-void Logger_release();
-void log_add(Logger l, int level, const char *msg);
-void log_debug(const char *fmt, ...);
-void log_info(const char *fmt, ...);
-void log_warn(const char *fmt, ...);
-void log_error(const char *fmt, ...);
-#endif
 
 #if defined __cplusplus
 }

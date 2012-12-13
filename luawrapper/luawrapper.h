@@ -21,17 +21,20 @@ extern "C" {
 #include "../logger/logger.h"
 #include "../serialport/serialport.h"
 #include "../parse/parse.h"
+#include "../odbc/odbc.h"
 
 #if defined _DEBUG
 #pragma comment(lib, "../Debug/logger.lib")
 #pragma comment(lib, "../Debug/lua.lib")
 #pragma comment(lib, "../Debug/serialport.lib")
 #pragma comment(lib, "../Debug/parse.lib")
+#pragma comment(lib, "../Debug/odbc.lib")
 #else
 #pragma comment(lib, "../Release/logger.lib")
 #pragma comment(lib, "../Release/lua.lib")
 #pragma comment(lib, "../Release/serialport.lib")
 #pragma comment(lib, "../Release/parse.lib")
+#pragma comment(lib, "../Release/odbc.lib")
 #endif
 
 int luaopen_luawrapper(lua_State *lua);

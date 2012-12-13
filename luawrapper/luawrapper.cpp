@@ -5,7 +5,7 @@
 // Time-stamp:   <Saturday November 24, 10:4:12 2012>
 
 #include "luawrapper.h"
-
+#define MAX_BUF_SIZE 512
 typedef struct _ref_list_received{
 	int func_ref;
 	struct _ref_list_received *next;
@@ -18,40 +18,59 @@ static unsigned char spbuf[1024];
 static unsigned char spWrite[1024];
 // register logger function
 #pragma region logger module wrapper
+static int lua_Logger_create(lua_State *lua)
+{
+	const char * path = luaL_checkstring(lua, -1);
+	lua_pushinteger(lua, (lua_Integer)Logger_create(path));
+	return 1;
+}
+
+static int lua_Logger_release(lua_State *lua)
+{
+	Logger l = (Logger)luaL_checkinteger(lua, -1);
+	MessageBoxA(NULL, "release in luawrapper", "Logger Release", MB_OK);
+	Logger_release(l);
+	return 1;
+}
+
 static int lua_log_info(lua_State *lua)
 {
-    const char *content = luaL_checkstring(lua, -1);
-    log_info(content);
-    return 0;
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+	const char *content = luaL_checkstring(lua, -1);
+	log_info(l, content);
+	return 0;
 }
 
 static int lua_log_error(lua_State *lua)
 {
-    const char *content = luaL_checkstring(lua, -1);
-    log_error(content);
-    return 0;
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+	const char *content = luaL_checkstring(lua, -1);
+	log_error(l, content);
+	return 0;
 }
 
 static int lua_log_debug(lua_State *lua)
 {
-    const char *content = luaL_checkstring(lua, -1);
-    log_debug(content);
-    return 0;
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+	const char *content = luaL_checkstring(lua, -1);
+	log_debug(l, content);
+	return 0;
 }
 
 static int lua_log_warn(lua_State *lua)
 {
-    const char *content = luaL_checkstring(lua, -1);
-    log_warn(content);
-    return 0;
+	Logger l = (Logger)luaL_checkinteger(lua, -2);
+	const char *content = luaL_checkstring(lua, -1);
+	log_warn(l, content);
+	return 0;
 }
 
 #pragma endregion logger module wrapper
 
 #pragma region help function
 /*
- * push the byte array to lua stack, and it key start from 1.
- */
+* push the byte array to lua stack, and it key start from 1.
+*/
 int ByteArray2LuaTable(lua_State *lua, __u8 *data, __u32 len)
 {
 	lua_newtable(lua);
@@ -64,8 +83,8 @@ int ByteArray2LuaTable(lua_State *lua, __u8 *data, __u32 len)
 	return 1;
 }
 /*
- * get byte array in current lua stack.
- */
+* get byte array in current lua stack.
+*/
 int LuaTable2ByteArray(lua_State *lua, __u8 *data)
 {
 	int len = 0, idx;
@@ -84,39 +103,39 @@ int LuaTable2ByteArray(lua_State *lua, __u8 *data)
 static int baud[] = {300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 33600, 38400, 57600, 115200};
 static int lua_serialport_open(lua_State *lua)
 {
-    CONFIG conf;
-    int option = 0;
+	CONFIG conf;
+	int option = 0;
 	int ret;
-    TCHAR buf [MAX_PATH];
+	TCHAR buf [MAX_PATH];
 	const char *port = luaL_checkstring(lua, -2);
 	ret = MultiByteToWideChar( CP_ACP, MB_COMPOSITE, port, -1, buf, MAX_PATH);
-    int arg = luaL_checkinteger(lua, -1);
+	int arg = luaL_checkinteger(lua, -1);
 
 	conf.mask = SPCF_PORTNAME;
-    conf.pszPortName = buf;
+	conf.pszPortName = buf;
 
-    conf.mask |= SPCF_FLOWCONT;
-    option = arg & 0xff;    
-    conf.flowControl = (FLOWCONTROL)option;
-	
+	conf.mask |= SPCF_FLOWCONT;
+	option = arg & 0xff;    
+	conf.flowControl = (FLOWCONTROL)option;
+
 	conf.mask |= SPCF_PARITY;
-    option = arg >> 8 & 0xff;    
-    conf.bParity = option;
+	option = arg >> 8 & 0xff;    
+	conf.bParity = option;
 
-    conf.mask |= SPCF_BAUDRATE;
-    conf.dwBaudRate = baud[arg >> 16];
+	conf.mask |= SPCF_BAUDRATE;
+	conf.dwBaudRate = baud[arg >> 16];
 
 	option = SerialPort_Open(&conf);
-    lua_pushnumber(lua, option);
+	lua_pushnumber(lua, option);
 	return 1;
 }
 
 static int lua_serialport_close(lua_State *lua)
 {
 	int ret = 0;
-    ret = SerialPort_Close();
+	ret = SerialPort_Close();
 	lua_pushnumber(lua, ret);
-    return 1;
+	return 1;
 }
 
 static int lua_serialport_read(lua_State *lua)
@@ -139,7 +158,7 @@ static int lua_serialport_read(lua_State *lua)
 		else
 			lua_pushnil(lua);
 	}
-    return 1;
+	return 1;
 }
 
 static int lua_serialport_write(lua_State *lua)
@@ -152,7 +171,6 @@ static int lua_serialport_write(lua_State *lua)
 	{
 		spWrite[len++] = lua_tointeger(lua, -1); // -1 是 value 的索引， -2 是 key 的索引
 		lua_pop(lua, 1);
-		log_info("write data %d", spWrite[len - 1]);
 	}
 	if (len)
 	{
@@ -161,20 +179,18 @@ static int lua_serialport_write(lua_State *lua)
 	}
 	else
 		lua_pushnil(lua);
-    return 1;
+	return 1;
 }
 static int lua_serialport_set_received_callback(lua_State *lua)
 {
 	ref_list_received *rlr;
 	if ((rlr = (ref_list_received *)malloc(sizeof *rlr)) == NULL)
 	{
-		log_error("malloc fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
 		return 0;
 	}
 	rlr->func_ref = luaL_ref(lua, LUA_REGISTRYINDEX);
 	if ( rlr->func_ref == LUA_REFNIL )
 	{
-		log_error("create ref fail in %s:%s:%d", __FILE__, __FUNCTION__, __LINE__);
 		free(rlr);
 	}
 	else
@@ -183,7 +199,7 @@ static int lua_serialport_set_received_callback(lua_State *lua)
 		rl_received = rlr;
 	}
 	lua_pop(lua, -1);
-    return 1;
+	return 1;
 }
 
 static int lua_serialport_remove_received_callback(lua_State *lua)
@@ -206,10 +222,9 @@ static int lua_serialport_set_pinchange_callback(lua_State *lua)
 	ref_pin = ref;
 	if ( ref == LUA_REFNIL )
 	{
-		log_error("create ref fail in lua_serialport_set_pinchange_callback");
 	}
 	lua_pop(lua, -1);
-    return 1;
+	return 1;
 }
 
 static int lua_serialport_set_error_callback(lua_State *lua)
@@ -220,7 +235,6 @@ static int lua_serialport_set_error_callback(lua_State *lua)
 	ref_error = ref;
 	if ( ref == LUA_REFNIL )
 	{
-		log_error("create ref fail in lua_serialport_set_error_callback");
 	}
 	lua_pop(lua, -1);
 	return 1;
@@ -235,10 +249,10 @@ int error(char *info)
 	{
 		lua_pushstring(_lua, info);
 		if (lua_pcall(_lua, 1, 1, 0) != LUA_OK)
-			log_error("callback fail: %s", lua_tostring(_lua, -1));
+			;
 		else
 		{
-			log_info("error callback success");
+
 			return lua_tointeger(_lua, -1);
 		}		
 	}
@@ -250,13 +264,12 @@ int received()
 		lua_rawgeti(_lua, LUA_REGISTRYINDEX, rl_received->func_ref);
 	if (lua_isfunction(_lua, -1))
 		if (lua_pcall(_lua, 0, 1, 0) != LUA_OK)
-			log_error("callback fail: %s", lua_tostring(_lua, -1));
+			;
 		else
 		{
-			log_info("received callback success");
 			return lua_tointeger(_lua, -1);
 		}
-	return 0;
+		return 0;
 }
 int pin_change(int pin)
 {	
@@ -265,10 +278,9 @@ int pin_change(int pin)
 	{
 		lua_pushinteger(_lua, pin);
 		if (lua_pcall(_lua, 1, 1, 0) != LUA_OK)
-			log_error("callback fail: %s", lua_tostring(_lua, -1));
+			;
 		else
 		{
-			log_info("received callback success");
 			return lua_tointeger(_lua, -1);
 		}	
 	}
@@ -346,7 +358,6 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_rawset(lua, -3);
 
 		lua_pushstring(lua, "Dir");
-		log_info("--");
 		lua_pushinteger(lua, dg->prefix->control.DIR);
 		lua_rawset(lua, -3);
 
@@ -365,7 +376,7 @@ static int lua_ParseDatagram(lua_State * lua)
 		lua_pushstring(lua, "RelayLevel");
 		lua_pushinteger(lua, dg->prefix->info.info_down.relayLevel);
 		lua_rawset(lua, -3);
-		
+
 		lua_pushstring(lua, "ChannelId");
 		lua_pushinteger(lua, dg->prefix->info.info_down.channelID);
 		lua_rawset(lua, -3);
@@ -429,7 +440,7 @@ static int lua_ParseDatagram(lua_State * lua)
 			}
 		}
 	}
-    return 1;
+	return 1;
 }
 
 static int lua_CorrectDatagram(lua_State *lua)
@@ -442,12 +453,7 @@ static int lua_CorrectDatagram(lua_State *lua)
 		return 0;
 	}
 	len = LuaTable2ByteArray(lua, data);
-	for (int i = 0; i < len; i++)
-		log_info("0x%02X", data[i]);
 	len = (__u16)CorrectDatagram(data, len);
-	log_info("------------------------------------");
-	for (int i = 0; i < len; i++)
-		log_info("0x%02X", data[i]);
 	ByteArray2LuaTable(lua, data, (__u32)len);
 	free(data);
 	return 1;
@@ -458,44 +464,189 @@ static int lua_ParsePacket(lua_State *lua)
 }
 #pragma endregion parse datagram wrapper
 
+#pragma region odbc module wrapper
+/*
+ * Return the length of char string
+ */
+static int wstr2str(const wchar_t *wstr, char *str)
+{
+	memset(str, 0, MAX_BUF_SIZE);
+	return WideCharToMultiByte(CP_ACP, 0,  wstr, wcslen(wstr), str, MAX_BUF_SIZE, NULL, NULL);
+}
+/*
+ * Return the length of wchar_t string
+ */
+static int str2wstr(const char *str, wchar_t *wstr)
+{
+	memset(wstr, 0, MAX_BUF_SIZE);
+	return MultiByteToWideChar( CP_ACP, 0, str, strlen(str), wstr, MAX_BUF_SIZE);
+}
+static int lua_odbc_open(lua_State * lua)
+{
+	connection *conn;
+	wchar_t wszDsn[MAX_BUF_SIZE];
+	const char * szDsn = luaL_checkstring(lua, -1);
+	str2wstr(szDsn, wszDsn);
+	odbc_open(wszDsn, &conn);
+	lua_pushinteger(lua, (lua_Integer)conn);
+	return 1;
+}
+
+static int lua_odbc_prepare(lua_State * lua)
+{
+	statement *stmt;
+	wchar_t wszSql[MAX_BUF_SIZE];
+	connection *conn = (connection *)luaL_checkinteger(lua, -2);
+	const char *szSql = luaL_checkstring(lua, -1);
+	str2wstr(szSql, wszSql);
+	odbc_prepare(conn, wszSql, wcslen(wszSql), &stmt);
+	lua_pushinteger(lua, (lua_Integer)stmt);
+	return 1;
+}
+
+static int lua_odbc_exec(lua_State * lua)
+{
+	wchar_t wszSql[MAX_BUF_SIZE];
+	connection *conn = (connection *)luaL_checkinteger(lua, -2);
+	const char *szSql = luaL_checkstring(lua, -1);
+	str2wstr(szSql, wszSql);
+	odbc_exec(conn, wszSql);
+	return 1;
+}
+
+static int lua_odbc_row_count(lua_State * lua)
+{
+	connection *conn = (connection *)luaL_checkinteger(lua, -1);
+	lua_pushinteger(lua, odbc_row_count(conn));
+	return 1;
+}
+
+static int lua_odbc_column_count(lua_State * lua)
+{
+	statement *stmt = (statement *)luaL_checkinteger(lua, -1);
+	lua_pushinteger(lua, odbc_column_count(stmt));
+	return 1;
+}
+
+static int lua_odbc_column_name(lua_State * lua)
+{
+	char szName[MAX_BUF_SIZE];
+	statement *stmt = (statement *)luaL_checkinteger(lua, -2);
+	unsigned int iCol = luaL_checkinteger(lua, -1);
+	wchar_t *wszName = odbc_column_name(stmt, iCol);
+	wstr2str(wszName, szName);
+	lua_pushstring(lua, szName);
+	return 1;
+}
+
+static int lua_odbc_column_text(lua_State * lua)
+{
+	char szText[MAX_BUF_SIZE];
+	statement *stmt = (statement *)luaL_checkinteger(lua, -2);
+	unsigned int iCol = luaL_checkinteger(lua, -1);
+	wchar_t *wszText = odbc_column_text(stmt, iCol);
+	wstr2str(wszText, szText);
+	lua_pushstring(lua, szText);
+	return 1;
+}
+
+static int lua_odbc_column_double(lua_State * lua)
+{
+	double data;
+	statement *stmt = (statement *)luaL_checkinteger(lua, -2);
+	unsigned int iCol = luaL_checkinteger(lua, -1);
+	data = odbc_column_double(stmt, iCol);
+	lua_pushnumber(lua, data);
+	return 1;
+}
+
+static int lua_odbc_column_int(lua_State * lua)
+{
+	int data;
+	statement *stmt = (statement *)luaL_checkinteger(lua, -2);
+	unsigned int iCol = luaL_checkinteger(lua, -1);
+	data = odbc_column_int(stmt, iCol);
+	lua_pushinteger(lua, data);
+	return 1;
+}
+
+static int lua_odbc_step(lua_State * lua)
+{
+	statement *stmt = (statement *)luaL_checkinteger(lua, -1);
+	lua_pushinteger(lua, odbc_step(stmt));
+	return 1;
+}
+
+static int lua_odbc_finalize(lua_State * lua)
+{
+	statement *stmt = (statement *)luaL_checkinteger(lua, -1);
+	odbc_finalize(&stmt);
+	return 1;
+}
+
+static int lua_odbc_close(lua_State * lua)
+{
+	connection *conn = (connection *)luaL_checkinteger(lua, -1);
+	odbc_close(&conn);
+	return 1;
+}
+#pragma endregion odbc module wrapper
+
 static const luaL_Reg logger[] = {
-    // logger.dll
-    {"log_info", lua_log_info},
-    {"log_error", lua_log_error},
-    {"log_debuf", lua_log_debug},
-    {"log_warn", lua_log_warn},
-    {"serialport_open", lua_serialport_open},
-    {"serialport_close", lua_serialport_close},
+	// logger.dll
+	{"log_create", lua_Logger_create},
+	{"log_release", lua_Logger_release},
+	{"log_info", lua_log_info},
+	{"log_error", lua_log_error},
+	{"log_debuf", lua_log_debug},
+	{"log_warn", lua_log_warn},
+
+	{"serialport_open", lua_serialport_open},
+	{"serialport_close", lua_serialport_close},
 	{"serialport_read", lua_serialport_read},
 	{"serialport_write", lua_serialport_write},
-    {"serialport_set_received_callback", lua_serialport_set_received_callback},
+	{"serialport_set_received_callback", lua_serialport_set_received_callback},
 	{"serialport_remove_received_callback", lua_serialport_remove_received_callback},
-    {"serialport_set_pinchange_callback", lua_serialport_set_pinchange_callback},
-    {"serialport_set_error_callback", lua_serialport_set_error_callback},
+	{"serialport_set_pinchange_callback", lua_serialport_set_pinchange_callback},
+	{"serialport_set_error_callback", lua_serialport_set_error_callback},
+
 	{"ParseDatagram", lua_ParseDatagram},
 	{"ParsePacket", lua_ParsePacket},
 	{"CorrectDatagram", lua_CorrectDatagram},
-    {0, 0}
+
+	{"lua_odbc_open", lua_odbc_open}, 
+	{"lua_odbc_prepare", lua_odbc_prepare}, 
+	{"lua_odbc_exec", lua_odbc_exec}, 
+	{"lua_odbc_row_count", lua_odbc_row_count}, 
+	{"lua_odbc_column_count", lua_odbc_column_count}, 
+	{"lua_odbc_column_name", lua_odbc_column_name}, 
+	{"lua_odbc_column_text", lua_odbc_column_text}, 
+	{"lua_odbc_column_double", lua_odbc_column_double}, 
+	{"lua_odbc_column_int", lua_odbc_column_int}, 
+	{"lua_odbc_step", lua_odbc_step}, 
+	{"lua_odbc_finalize", lua_odbc_finalize}, 
+	{"lua_odbc_close", lua_odbc_close}, 
+	{0, 0}
 };
 
 int luaopen_luawrapper(lua_State *lua)
 {
 	_lua = lua;
 	SetSerialPortCallback(error, received, pin_change);
-    luaL_newlibtable(lua, logger);
-    luaL_setfuncs(lua, logger, 0);
-    return 1;
+	luaL_newlibtable(lua, logger);
+	luaL_setfuncs(lua, logger, 0);
+	return 1;
 }
 #if 0
 int RegisterFunctions(lua_State *lua)
 {
-    const luaL_Reg *lib = logger;
-    for (; lib->func != NULL; lib++)
-    {
-        lua_pushcfunction(lua, lib->func);
-        lua_setglobal(lua, lib->name);
-    }
-    return 1;
+	const luaL_Reg *lib = logger;
+	for (; lib->func != NULL; lib++)
+	{
+		lua_pushcfunction(lua, lib->func);
+		lua_setglobal(lua, lib->name);
+	}
+	return 1;
 }
 #endif
 
